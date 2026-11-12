@@ -13,6 +13,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.academia.puntomarcial.bdd.comun.Login;
 import com.academia.puntomarcial.bdd.comun.Navegador;
 
 import io.cucumber.java.After;
@@ -53,21 +54,7 @@ public class Sprint4Steps {
 
     @Given("que inicié sesión con el correo {string} y la contraseña {string}")
     public void queInicieSesion(String correo, String clave) throws InterruptedException {
-        driver.get(Navegador.URL + "/login");
-        Thread.sleep(2000);
-
-        //Caja de texto del correo y la contraseña
-        driver.findElement(By.id("correo")).sendKeys(correo);
-        Thread.sleep(2000);
-        driver.findElement(By.id("password")).sendKeys(clave);
-        Thread.sleep(2000);
-
-        //Botón INGRESAR
-        driver.findElement(By.cssSelector("button.login-button")).click();
-
-        //Espera hasta que el sistema cambie de pantalla
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlContains("/login")));
-        Thread.sleep(2000);
+        Login.iniciarSesion(driver, wait, correo, clave);
     }
 
     @When("abro la pantalla {string}")
