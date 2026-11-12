@@ -1,0 +1,70 @@
+<div class="instructor-page">
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="/images/logo_puntomarcial.jpg" alt="Punto Marcial" class="brand-logo">
+      <div class="brand-text">
+        <strong>PUNTO MARCIAL</strong>
+        <span>ÁREA DEL INSTRUCTOR</span>
+      </div>
+    </div>
+
+    <button type="button" class="back-button" (click)="volver()">
+      <span aria-hidden="true">←</span> PANEL DEL INSTRUCTOR
+    </button>
+  </header>
+
+  <main id="contenido" tabindex="-1" class="workspace">
+
+    <section class="intro">
+      <span class="eyebrow">INSTRUCTOR / CUENTA</span>
+      <h1>MI <strong>PERFIL.</strong></h1>
+      <p>Tus datos registrados. Puedes actualizar tu correo y tu teléfono.</p>
+    </section>
+
+    @if (usuario; as u) {
+      <section class="panel" aria-label="Datos del instructor">
+        <dl class="datos">
+          <div><dt>Nombre</dt><dd>{{ u.nombre }} {{ u.apellido }}</dd></div>
+          <div><dt>{{ u.tipoDoc }}</dt><dd>{{ u.numDoc }}</dd></div>
+          <div><dt>Disciplina</dt><dd>{{ etiquetaDisciplina(u.disciplina || '') }}</dd></div>
+          <div><dt>Estado</dt><dd>{{ u.estado === 'ACTIVO' ? 'Activo' : 'Inactivo' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="panel">
+        <form class="form-perfil" novalidate (ngSubmit)="guardar()" aria-label="Datos de contacto">
+          <div class="field">
+            <label for="perfil-correo">Correo electrónico</label>
+            <input id="perfil-correo" name="correo" type="email" autocomplete="email"
+                   [(ngModel)]="correo" required aria-required="true"
+                   [attr.aria-invalid]="!!errorCorreo"
+                   [attr.aria-describedby]="errorCorreo ? 'error-correo' : null">
+            <small id="error-correo" class="field-error" *ngIf="errorCorreo">{{ errorCorreo }}</small>
+          </div>
+
+          <div class="field">
+            <label for="perfil-telefono">Teléfono</label>
+            <input id="perfil-telefono" name="telefono" type="tel" autocomplete="tel" inputmode="numeric" maxlength="9"
+                   [(ngModel)]="telefono" required aria-required="true"
+                   [attr.aria-invalid]="!!errorTelefono"
+                   [attr.aria-describedby]="errorTelefono ? 'error-telefono' : null">
+            <small id="error-telefono" class="field-error" *ngIf="errorTelefono">{{ errorTelefono }}</small>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="primary" [disabled]="guardando">
+              {{ guardando ? 'GUARDANDO...' : 'GUARDAR CAMBIOS' }}
+            </button>
+          </div>
+        </form>
+      </section>
+    }
+
+    <div aria-live="polite">
+      <p class="feedback success" role="status" *ngIf="mensaje"><span aria-hidden="true">✓</span> {{ mensaje }}</p>
+    </div>
+    <p class="feedback error" role="alert" *ngIf="error"><span aria-hidden="true">!</span> {{ error }}</p>
+
+  </main>
+</div>

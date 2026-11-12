@@ -1,0 +1,574 @@
+:host {
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+
+/* =====================================================
+   PÁGINA
+===================================================== */
+
+.client-page {
+  min-height: 100vh;
+
+  background:
+    linear-gradient(
+      var(--color-cuadricula) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      var(--color-cuadricula) 1px,
+      transparent 1px
+    ),
+    var(--color-fondo);
+
+  background-size: 46px 46px;
+
+  color: var(--color-texto);
+
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.topbar {
+  height: 82px;
+
+  padding: 0 5%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: var(--color-superficie);
+
+  border-bottom: 1px solid var(--color-borde);
+}
+
+
+/* MARCA */
+
+.brand {
+  display: flex;
+  align-items: center;
+
+  gap: 15px;
+}
+
+.brand-logo {
+  width: 48px;
+  height: 48px;
+
+  display: block;
+
+  object-fit: contain;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.brand-text strong {
+  color: var(--color-texto);
+
+  font-size: 0.8125rem;
+  font-weight: 900;
+
+  letter-spacing: 2px;
+}
+
+.brand-text span {
+  color: var(--color-texto-secundario);
+
+  font-size: 0.8125rem;
+  font-weight: 700;
+
+  letter-spacing: 2.3px;
+}
+
+
+/* CERRAR SESIÓN */
+
+.logout-button {
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 11px 0;
+
+  background: transparent;
+
+  border: 0;
+
+  color: var(--color-texto-secundario);
+
+  cursor: pointer;
+
+  transition: color 160ms ease;
+}
+
+.logout-button span {
+  font-size: 0.8125rem;
+  font-weight: 800;
+
+  letter-spacing: 1.5px;
+}
+
+.logout-button strong {
+  color: var(--color-marca);
+
+  font-size: 1.0625rem;
+  font-weight: 400;
+}
+
+.logout-button:hover {
+  color: var(--color-texto);
+}
+
+
+/* =====================================================
+   CONTENIDO
+===================================================== */
+
+.workspace {
+  width: min(1280px, 90%);
+
+  margin: 0 auto;
+
+  padding: 65px 0 35px;
+}
+
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.hero {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    330px;
+
+  align-items: end;
+
+  gap: 60px;
+
+  padding-bottom: 55px;
+
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.eyebrow {
+  display: block;
+
+  margin-bottom: 18px;
+
+  color: var(--color-marca);
+
+  font-size: 0.8125rem;
+  font-weight: 900;
+
+  letter-spacing: 3px;
+}
+
+.hero h1 {
+  margin: 0;
+
+  color: var(--color-texto);
+
+  font-size: clamp(2.6875rem, 5.5vw, 4.5rem);
+  font-weight: 900;
+
+  line-height: 0.91;
+
+  letter-spacing: -3.5px;
+}
+
+.hero h1 strong {
+  color: var(--color-marca);
+
+  font-weight: 900;
+}
+
+
+/* DESCRIPCIÓN */
+
+.hero-description {
+  display: grid;
+
+  grid-template-columns: 35px 1fr;
+
+  gap: 18px;
+
+  padding-bottom: 5px;
+}
+
+.hero-number {
+  color: var(--color-marca);
+
+  font-size: 0.8125rem;
+  font-weight: 900;
+}
+
+.hero-description p {
+  margin: 0;
+
+  color: var(--color-texto-secundario);
+
+  font-size: 0.8125rem;
+
+  line-height: 1.8;
+}
+
+
+/* =====================================================
+   MÓDULOS
+===================================================== */
+
+.menu-modules {
+  margin-top: 0;
+
+  border-left: 1px solid var(--color-borde);
+  border-right: 1px solid var(--color-borde);
+}
+
+
+/* MÓDULO */
+
+.module {
+  width: 100%;
+  min-height: 135px;
+
+  display: grid;
+
+  grid-template-columns:
+    80px
+    minmax(0, 1fr)
+    60px;
+
+  align-items: center;
+
+  padding: 0 30px;
+
+  background: var(--color-superficie);
+
+  border: 0;
+  border-bottom: 1px solid var(--color-borde);
+
+  color: inherit;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  position: relative;
+
+  overflow: hidden;
+
+  transition:
+    background 180ms ease,
+    padding-left 180ms ease;
+}
+
+
+/* LÍNEA ROJA AL HOVER */
+
+.module::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 3px;
+  height: 100%;
+
+  background: var(--color-marca);
+
+  transform: scaleY(0);
+
+  transform-origin: bottom;
+
+  transition: transform 180ms ease;
+}
+
+.module:hover {
+  background: var(--color-superficie);
+
+  padding-left: 36px;
+}
+
+.module:hover::before {
+  transform: scaleY(1);
+}
+
+
+/* PRIMER MÓDULO */
+
+.module-featured {
+  background:
+    linear-gradient(
+      90deg,
+      var(--color-marca-tenue),
+      transparent 35%
+    ),
+    var(--color-superficie);
+}
+
+
+/* NÚMERO */
+
+.module-number {
+  color: var(--color-texto-secundario);
+
+  font-size: 1.6875rem;
+  font-weight: 900;
+
+  letter-spacing: -1px;
+
+  transition: color 180ms ease;
+}
+
+.module:hover .module-number {
+  color: var(--color-marca);
+}
+
+
+/* CONTENIDO */
+
+.module-content {
+  padding: 29px 0;
+}
+
+.module-category {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: var(--color-marca);
+
+  font-size: 0.8125rem;
+  font-weight: 900;
+
+  letter-spacing: 2.3px;
+}
+
+.module-content h2 {
+  margin: 0;
+
+  color: var(--color-texto);
+
+  font-size: 1.3125rem;
+  font-weight: 750;
+
+  letter-spacing: -0.5px;
+}
+
+.module-content p {
+  max-width: 480px;
+
+  margin: 7px 0 0;
+
+  color: var(--color-texto-secundario);
+
+  font-size: 0.8125rem;
+
+  line-height: 1.6;
+}
+
+
+/* FLECHA */
+
+.module-arrow {
+  justify-self: end;
+
+  color: var(--color-texto-secundario);
+
+  font-size: 1.4375rem;
+
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.module:hover .module-arrow {
+  color: var(--color-marca);
+
+  transform: translateX(5px);
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.page-footer {
+  min-height: 70px;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    auto
+    1fr;
+
+  align-items: center;
+
+  gap: 30px;
+
+  color: var(--color-texto-secundario);
+
+  font-size: 0.8125rem;
+  font-weight: 700;
+
+  letter-spacing: 1.5px;
+}
+
+.page-footer > div {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+}
+
+.page-footer > span:last-child {
+  justify-self: end;
+}
+
+.footer-dot {
+  width: 5px;
+  height: 5px;
+
+  background: var(--color-marca);
+
+  border-radius: 50%;
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 850px) {
+
+  .hero {
+    grid-template-columns: 1fr;
+
+    gap: 30px;
+  }
+
+  .hero-description {
+    max-width: 430px;
+  }
+
+  .page-footer {
+    grid-template-columns: 1fr auto;
+  }
+
+  .page-footer > span:nth-child(2) {
+    display: none;
+  }
+}
+
+
+/* =====================================================
+   MÓVIL
+===================================================== */
+
+@media (max-width: 600px) {
+
+  .topbar {
+    height: 72px;
+
+    padding: 0 20px;
+  }
+
+  .brand-logo {
+    width: 42px;
+    height: 42px;
+  }
+
+  .brand-text span {
+    display: none;
+  }
+
+  .logout-button span {
+    display: none;
+  }
+
+  .logout-button strong {
+    font-size: 1.25rem;
+  }
+
+
+  .workspace {
+    width: calc(100% - 36px);
+
+    padding-top: 45px;
+  }
+
+
+  .hero {
+    padding-bottom: 40px;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+
+    letter-spacing: -2px;
+  }
+
+
+  .module {
+    min-height: 120px;
+
+    grid-template-columns:
+      45px
+      minmax(0, 1fr)
+      25px;
+
+    padding: 0 17px;
+  }
+
+  .module:hover {
+    padding-left: 20px;
+  }
+
+  .module-number {
+    font-size: 1.125rem;
+  }
+
+  .module-content {
+    padding: 22px 0;
+  }
+
+  .module-content h2 {
+    font-size: 1.0625rem;
+  }
+
+  .module-content p {
+    font-size: 0.8125rem;
+  }
+
+
+  .page-footer {
+    min-height: 65px;
+
+    grid-template-columns: 1fr auto;
+
+    gap: 15px;
+  }
+}

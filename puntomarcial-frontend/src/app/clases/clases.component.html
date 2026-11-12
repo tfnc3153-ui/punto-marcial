@@ -1,0 +1,343 @@
+<div class="classes-page">
+
+  <!-- HEADER -->
+  <header class="topbar">
+
+    <div class="brand">
+
+      <img
+        src="/images/logo_puntomarcial.jpg"
+        alt="Punto Marcial"
+        class="brand-logo">
+
+      <div class="brand-text">
+        <strong>PUNTO MARCIAL</strong>
+        <span>PROGRAMACIÓN DE CLASES</span>
+      </div>
+
+    </div>
+
+    <button type="button" class="back-button" (click)="volver()">
+      <span aria-hidden="true">←</span>
+      VOLVER
+    </button>
+
+  </header>
+
+
+  <main id="contenido" tabindex="-1" class="workspace">
+
+    <!-- INTRODUCCIÓN -->
+    <section class="hero">
+
+      <div>
+
+        <span class="eyebrow">
+          RESERVAS / 02
+        </span>
+
+        <h1>
+          ELIGE TU<br>
+          <strong>ENTRENAMIENTO.</strong>
+        </h1>
+
+      </div>
+
+      <div class="hero-info">
+
+        <span>02</span>
+
+        <p>
+          Consulta la programación, revisa el instructor,
+          horario, sala y disponibilidad antes de seleccionar
+          una clase.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- CARGANDO -->
+    <section
+      *ngIf="cargando"
+      class="loading-state"
+      role="status">
+
+      <div class="loading-spinner" aria-hidden="true"></div>
+
+      <div>
+        <strong>CARGANDO PROGRAMACIÓN</strong>
+
+        <p>
+          Consultando las clases disponibles...
+        </p>
+      </div>
+
+    </section>
+
+
+    <!-- ERROR -->
+    <section
+      *ngIf="error"
+      class="message-error"
+      role="alert">
+
+      <div class="error-symbol" aria-hidden="true">
+        !
+      </div>
+
+      <div>
+        <strong>NO SE PUDIERON CARGAR LAS CLASES</strong>
+
+        <p>
+          {{ error }}
+        </p>
+      </div>
+
+    </section>
+
+
+    <!-- LISTA DE CLASES -->
+    <section
+      class="schedule-section"
+      *ngIf="!cargando && clases.length > 0">
+
+      <!-- CABECERA -->
+      <header class="schedule-header">
+
+        <div>
+
+          <span class="eyebrow">
+            PROGRAMACIÓN
+          </span>
+
+          <h2 id="titulo-clases" tabindex="-1">Clases disponibles</h2>
+
+        </div>
+
+        <div class="classes-count">
+
+          <strong>{{ clases.length }}</strong>
+
+          <span>
+            {{ clases.length === 1 ? 'CLASE' : 'CLASES' }}
+          </span>
+
+        </div>
+
+      </header>
+
+
+      <!-- ENCABEZADOS DE TABLA -->
+      <div class="table-head" aria-hidden="true">
+
+        <span>DISCIPLINA</span>
+        <span>HORARIO</span>
+        <span>SALA</span>
+        <span>DISPONIBILIDAD</span>
+        <span aria-hidden="true"></span>
+
+      </div>
+
+
+      <!-- CLASE -->
+      <div class="schedule-list">
+
+        <article
+          class="class-row"
+          *ngFor="let clase of clasesDePagina">
+
+
+          <!-- DISCIPLINA -->
+          <div class="discipline-column">
+
+            <div class="discipline-index" aria-hidden="true">
+              PM
+            </div>
+
+            <div>
+
+              <span class="row-label">
+                DISCIPLINA
+              </span>
+
+              <h3>
+                {{ etiquetaDisciplina(clase.disciplina) }}
+              </h3>
+
+              <span class="instructor">
+                {{ nombreInstructor(clase.instructor) }}
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <!-- HORARIO -->
+          <div class="time-column">
+
+            <span class="row-label">
+              INICIO
+            </span>
+
+            <strong>
+              {{ clase.horarioInicio | date:'dd/MM/yyyy' }}
+            </strong>
+
+            <span>
+              {{ clase.horarioInicio | date:'HH:mm' }}
+              —
+              {{ clase.horarioFin | date:'HH:mm' }}
+            </span>
+
+          </div>
+
+
+          <!-- SALA -->
+          <div class="room-column">
+
+            <span class="row-label">
+              SALA
+            </span>
+
+            <strong>
+              {{ clase.sala }}
+            </strong>
+
+          </div>
+
+
+          <!-- DISPONIBILIDAD -->
+          <div class="capacity-column">
+
+            <span class="row-label">
+              CUPOS
+            </span>
+
+            <div class="capacity-value">
+
+              <strong>
+                {{ clase.aforoDisponible }}
+              </strong>
+
+              <span>
+                / {{ clase.aforoMaximo }}
+              </span>
+
+            </div>
+
+            <span
+              class="availability"
+              [class.full]="clase.aforoDisponible === 0">
+
+              <i aria-hidden="true"></i>
+
+              <span aria-hidden="true">{{ clase.aforoDisponible > 0 ? '✓' : '✕' }}</span>
+              {{
+                clase.aforoDisponible > 0
+                  ? 'Disponible'
+                  : 'Completo'
+              }}
+
+            </span>
+
+          </div>
+
+
+          <!-- ACCIÓN -->
+          <div class="action-column">
+
+            <button
+              type="button"
+              class="select-button"
+              [disabled]="clase.aforoDisponible === 0"
+              [attr.aria-label]="
+                clase.aforoDisponible > 0
+                  ? 'Seleccionar ' + etiquetaDisciplina(clase.disciplina) + ' del ' + (clase.horarioInicio | date:'dd/MM/yyyy HH:mm')
+                  : etiquetaDisciplina(clase.disciplina) + ': sin cupos'
+              "
+              (click)="seleccionarClase(clase)">
+
+              <span>
+                {{
+                  clase.aforoDisponible > 0
+                    ? 'SELECCIONAR'
+                    : 'SIN CUPOS'
+                }}
+              </span>
+
+              <strong *ngIf="clase.aforoDisponible > 0" aria-hidden="true">
+                →
+              </strong>
+
+            </button>
+
+          </div>
+
+        </article>
+
+      </div>
+
+      <app-paginacion
+        [total]="clases.length"
+        [porPagina]="porPagina"
+        [pagina]="pagina"
+        (paginaChange)="pagina = $event"
+        etiqueta="Páginas de clases"
+        nombreElementos="clase(s)"
+        idFoco="titulo-clases">
+      </app-paginacion>
+
+    </section>
+
+
+    <!-- SIN CLASES -->
+    <section
+      class="empty-state"
+      *ngIf="!cargando && clases.length === 0 && !error">
+
+      <span class="empty-number">
+        00
+      </span>
+
+      <div>
+
+        <span class="eyebrow">
+          PROGRAMACIÓN
+        </span>
+
+        <h3>No hay clases registradas</h3>
+
+        <p>
+          Actualmente no existen clases disponibles
+          para mostrar.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer class="page-footer">
+
+      <div>
+        <span class="footer-dot" aria-hidden="true"></span>
+        <strong>PUNTO MARCIAL</strong>
+      </div>
+
+      <span>
+        DISCIPLINA · CONSTANCIA · SUPERACIÓN
+      </span>
+
+      <span>
+        © 2026
+      </span>
+
+    </footer>
+
+  </main>
+
+</div>

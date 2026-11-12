@@ -1,0 +1,311 @@
+<div class="reservation-page">
+
+  <!-- HEADER -->
+  <header class="topbar">
+
+    <div class="brand">
+
+      <img
+        src="/images/logo_puntomarcial.jpg"
+        alt="Punto Marcial"
+        class="brand-logo">
+
+      <div class="brand-text">
+        <strong>PUNTO MARCIAL</strong>
+        <span>RESERVA DE CLASE</span>
+      </div>
+
+    </div>
+
+    <button
+      type="button"
+      class="back-button"
+      (click)="volverClases()">
+
+      <span aria-hidden="true">←</span>
+      VOLVER A CLASES
+
+    </button>
+
+  </header>
+
+
+  <main id="contenido" tabindex="-1" class="workspace">
+
+    <!-- CABECERA -->
+    <section class="page-heading">
+
+      <div>
+        <span class="eyebrow">
+          RESERVAS / CONFIRMACIÓN
+        </span>
+
+        <h1>
+          CONFIRMA TU<br>
+          <strong>ENTRENAMIENTO.</strong>
+        </h1>
+      </div>
+
+      <p>
+        Revisa los datos de la clase seleccionada
+        antes de registrar tu reserva.
+      </p>
+
+    </section>
+
+
+    <!-- CLASE SELECCIONADA -->
+    <section
+      class="reservation-panel"
+      *ngIf="clase">
+
+      <!-- DISCIPLINA -->
+      <div class="class-identity">
+
+        <div class="class-index" aria-hidden="true">
+          01
+        </div>
+
+        <div class="class-title">
+
+          <span>DISCIPLINA</span>
+
+          <h2>
+            {{ etiquetaDisciplina(clase.disciplina) }}
+          </h2>
+
+          <p>
+            {{ nombreInstructor(clase.instructor) }}
+          </p>
+
+        </div>
+
+        <div class="availability">
+
+          <span class="status-dot" aria-hidden="true"></span>
+
+          <div>
+            <small>ESTADO</small>
+            <strong>
+              <span aria-hidden="true">{{ clase.aforoDisponible > 0 ? '✓' : '✕' }}</span>
+              {{ clase.aforoDisponible > 0 ? 'DISPONIBLE' : 'SIN CUPOS' }}
+            </strong>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- INFORMACIÓN -->
+      <div class="details-grid">
+
+        <div class="detail">
+
+          <span>INSTRUCTOR</span>
+
+          <strong>
+            {{ nombreInstructor(clase.instructor) }}
+          </strong>
+
+        </div>
+
+
+        <div class="detail">
+
+          <span>FECHA / INICIO</span>
+
+          <strong>
+            {{ clase.horarioInicio | date:'dd/MM/yyyy HH:mm' }}
+          </strong>
+
+        </div>
+
+
+        <div class="detail">
+
+          <span>FINALIZA</span>
+
+          <strong>
+            {{ clase.horarioFin | date:'HH:mm' }}
+          </strong>
+
+        </div>
+
+
+        <div class="detail">
+
+          <span>SALA</span>
+
+          <strong>
+            {{ clase.sala }}
+          </strong>
+
+        </div>
+
+
+        <div class="detail">
+
+          <span>AFORO MÁXIMO</span>
+
+          <strong>
+            {{ clase.aforoMaximo }}
+          </strong>
+
+        </div>
+
+
+        <div class="detail capacity">
+
+          <span>CUPOS DISPONIBLES</span>
+
+          <strong>
+            {{ clase.aforoDisponible }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- MENSAJES -->
+      <div
+        *ngIf="mensaje"
+        class="reservation-message success"
+        role="status"
+        aria-live="polite">
+
+        <span aria-hidden="true">✓</span>
+
+        <div>
+          <strong>Reserva registrada</strong>
+          <p>{{ mensaje }}</p>
+        </div>
+
+      </div>
+
+
+      <div
+        *ngIf="error"
+        class="reservation-message error"
+        role="alert">
+
+        <span aria-hidden="true">!</span>
+
+        <div>
+          <strong>No se pudo completar la reserva</strong>
+          <p>{{ error }}</p>
+        </div>
+
+      </div>
+
+
+      <!-- ACCIONES -->
+      <div class="reservation-actions">
+
+        <div class="action-note">
+
+          <span aria-hidden="true"></span>
+
+          <p>
+            Al confirmar, la reserva quedará
+            asociada a tu cuenta.
+          </p>
+
+        </div>
+
+
+        <div class="action-buttons">
+
+          <button
+            type="button"
+            class="cancel-button"
+            (click)="volverClases()">
+
+            ELEGIR OTRA CLASE
+
+          </button>
+
+
+          <button
+            type="button"
+            class="confirm-button"
+            [disabled]="cargando || !!mensaje || clase.aforoDisponible <= 0"
+            (click)="confirmarReserva()">
+
+            <span>
+              {{
+                cargando
+                  ? 'REGISTRANDO...'
+                  : 'CONFIRMAR RESERVA'
+              }}
+            </span>
+
+            <strong aria-hidden="true">→</strong>
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- SIN CLASE -->
+    <section
+      class="empty-state"
+      *ngIf="!clase">
+
+      <span class="empty-number" aria-hidden="true">!</span>
+
+      <div>
+
+        <span class="empty-label">
+          RESERVA NO DISPONIBLE
+        </span>
+
+        <h2>No se encontró la clase</h2>
+
+        <p>
+          No recibimos la información de la clase
+          seleccionada. Regresa al listado y selecciona
+          una clase nuevamente.
+        </p>
+
+        <button
+          type="button"
+          class="return-button"
+          (click)="volverClases()">
+
+          <span>VER CLASES</span>
+          <strong aria-hidden="true">→</strong>
+
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer class="page-footer">
+
+      <div>
+        <span class="footer-dot" aria-hidden="true"></span>
+        <strong>PUNTO MARCIAL</strong>
+      </div>
+
+      <span>
+        DISCIPLINA · CONSTANCIA · SUPERACIÓN
+      </span>
+
+      <span>
+        © 2026
+      </span>
+
+    </footer>
+
+  </main>
+
+</div>

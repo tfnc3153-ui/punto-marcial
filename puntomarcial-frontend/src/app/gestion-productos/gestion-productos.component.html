@@ -1,0 +1,286 @@
+<div class="product-page">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-line" aria-hidden="true"></span>
+      <div>
+        <strong>PUNTO MARCIAL</strong>
+        <small>TIENDA</small>
+      </div>
+    </div>
+
+    <button class="back-button" type="button" (click)="volver()">
+      <span aria-hidden="true">←</span> PANEL PRINCIPAL
+    </button>
+  </header>
+
+  <main id="contenido" tabindex="-1" class="workspace">
+    <section class="intro">
+      <span class="eyebrow">TIENDA / PRODUCTOS</span>
+      <h1>GESTIONA TUS <strong>PRODUCTOS.</strong></h1>
+      <p>
+        Equipamiento, protección, ropa y accesorios para MMA, Muay Thai y Box.
+        Controla precios y stock disponible.
+      </p>
+    </section>
+
+    <!-- FORMULARIO -->
+    <form
+      #productoForm="ngForm"
+      class="product-form"
+      novalidate
+      (ngSubmit)="guardar()">
+
+      <div class="form-heading">
+        <span>01 / DATOS DEL PRODUCTO</span>
+        <h2>
+          {{ editandoId === null ? 'Registrar producto' : 'Actualizar producto' }}
+        </h2>
+      </div>
+
+      <div class="fields">
+        <div class="field wide">
+          <label for="campo-nombre">Nombre <span aria-hidden="true">*</span></label>
+          <input
+            id="campo-nombre"
+            name="nombre"
+            [(ngModel)]="formulario.nombre"
+            placeholder="Ej. Guantes de entrenamiento"
+            maxlength="100"
+            autocomplete="off"
+            required
+            aria-required="true">
+        </div>
+
+        <div class="field">
+          <label for="campo-categoria">Categoría <span aria-hidden="true">*</span></label>
+          <select
+            id="campo-categoria"
+            name="categoria"
+            [(ngModel)]="formulario.categoria"
+            required
+            aria-required="true">
+            @for (categoria of categorias; track categoria.valor) {
+              <option [value]="categoria.valor">{{ categoria.etiqueta }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="campo-disciplina">Disciplina <span aria-hidden="true">*</span></label>
+          <select
+            id="campo-disciplina"
+            name="disciplina"
+            [(ngModel)]="formulario.disciplina"
+            required
+            aria-required="true">
+            @for (disciplina of disciplinas; track disciplina.valor) {
+              <option [value]="disciplina.valor">{{ disciplina.etiqueta }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="campo-talla">Talla / medida</label>
+          <input
+            id="campo-talla"
+            name="talla"
+            [(ngModel)]="formulario.talla"
+            placeholder="Ej. M, 12 oz, 4 m"
+            maxlength="20"
+            autocomplete="off"
+            aria-describedby="ayuda-talla">
+          <small id="ayuda-talla" class="help">Si no aplica, déjalo vacío (queda como "Única").</small>
+        </div>
+
+        <div class="field">
+          <label for="campo-precio">Precio (S/) <span aria-hidden="true">*</span></label>
+          <input
+            id="campo-precio"
+            name="precio"
+            type="number"
+            min="0.01"
+            step="0.01"
+            inputmode="decimal"
+            [(ngModel)]="formulario.precio"
+            required
+            aria-required="true">
+        </div>
+
+        <div class="field">
+          <label for="campo-stock">Stock <span aria-hidden="true">*</span></label>
+          <input
+            id="campo-stock"
+            name="stock"
+            type="number"
+            min="0"
+            step="1"
+            inputmode="numeric"
+            [(ngModel)]="formulario.stock"
+            required
+            aria-required="true">
+        </div>
+
+        <div class="field">
+          <label for="campo-stockMinimo">Stock mínimo <span aria-hidden="true">*</span></label>
+          <input
+            id="campo-stockMinimo"
+            name="stockMinimo"
+            type="number"
+            min="0"
+            step="1"
+            inputmode="numeric"
+            [(ngModel)]="formulario.stockMinimo"
+            required
+            aria-required="true"
+            aria-describedby="ayuda-minimo">
+          <small id="ayuda-minimo" class="help">Se avisa cuando el stock llega a este número.</small>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" type="submit" [disabled]="guardando">
+          {{
+            guardando
+              ? 'GUARDANDO...'
+              : editandoId === null
+                ? 'REGISTRAR PRODUCTO'
+                : 'GUARDAR CAMBIOS'
+          }}
+        </button>
+
+        <button
+          class="secondary"
+          type="button"
+          *ngIf="editandoId !== null"
+          (click)="cancelar()">
+          CANCELAR EDICIÓN
+        </button>
+      </div>
+    </form>
+
+    <div class="mensajes" aria-live="polite">
+      <p class="feedback success" role="status" *ngIf="mensaje">
+        <span aria-hidden="true">✓</span> {{ mensaje }}
+      </p>
+    </div>
+
+    <p class="feedback error" role="alert" *ngIf="error">
+      <span aria-hidden="true">!</span> {{ error }}
+    </p>
+
+    <!-- LISTADO -->
+    <section class="product-list" aria-labelledby="titulo-inventario">
+      <div class="list-heading">
+        <span>02 / INVENTARIO</span>
+        <h2 id="titulo-inventario" tabindex="-1">Productos registrados</h2>
+      </div>
+
+      <p class="alerta-stock" role="status" *ngIf="!cargando && cantidadStockBajo > 0">
+        <span aria-hidden="true">⚠</span>
+        {{ cantidadStockBajo }} producto(s) con stock bajo (en el mínimo o por debajo).
+      </p>
+
+      <div class="filtros">
+        <div class="field">
+          <label for="filtro-disciplina">Filtrar por disciplina</label>
+          <select id="filtro-disciplina" name="filtroDisciplina" [(ngModel)]="filtroDisciplina" (ngModelChange)="pagina = 1">
+            <option value="">Todas</option>
+            @for (disciplina of disciplinas; track disciplina.valor) {
+              <option [value]="disciplina.valor">{{ disciplina.etiqueta }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="filtro-categoria">Filtrar por categoría</label>
+          <select id="filtro-categoria" name="filtroCategoria" [(ngModel)]="filtroCategoria" (ngModelChange)="pagina = 1">
+            <option value="">Todas</option>
+            @for (categoria of categorias; track categoria.valor) {
+              <option [value]="categoria.valor">{{ categoria.etiqueta }}</option>
+            }
+          </select>
+        </div>
+
+        <label class="check" for="filtro-stock-bajo">
+          <input id="filtro-stock-bajo" type="checkbox" name="soloStockBajo" [(ngModel)]="soloStockBajo" (ngModelChange)="pagina = 1">
+          Solo stock bajo
+        </label>
+      </div>
+
+      <p class="empty" role="status" *ngIf="cargando">Cargando productos...</p>
+
+      <p class="empty" *ngIf="!cargando && !productos.length && !error">
+        Aún no hay productos registrados.
+      </p>
+
+      <p class="empty" *ngIf="!cargando && productos.length && !productosFiltrados.length">
+        Ningún producto coincide con los filtros.
+      </p>
+
+      <div class="table-wrapper" *ngIf="!cargando && productosFiltrados.length">
+        <table>
+          <caption>
+            Inventario de productos ({{ productosFiltrados.length }} de {{ productos.length }}).
+            Las filas resaltadas tienen stock bajo.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Producto</th>
+              <th scope="col">Categoría</th>
+              <th scope="col">Disciplina</th>
+              <th scope="col">Talla</th>
+              <th scope="col" class="num">Precio</th>
+              <th scope="col" class="num">Stock</th>
+              <th scope="col" class="num">Mínimo</th>
+              <th scope="col">Estado del stock</th>
+              <th scope="col"><span class="sr-only">Acciones</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (producto of productosDePagina; track producto.idProducto) {
+              <tr [class.stock-bajo]="producto.stockBajo">
+                <th scope="row">{{ producto.nombre }}</th>
+                <td>{{ etiquetaCategoria(producto.categoria) }}</td>
+                <td>{{ etiquetaDisciplina(producto.disciplina) }}</td>
+                <td>{{ producto.talla }}</td>
+                <td class="num">S/ {{ producto.precio | number:'1.2-2' }}</td>
+                <td class="num">{{ producto.stock }}</td>
+                <td class="num">{{ producto.stockMinimo }}</td>
+                <td>
+                  @if (producto.stock === 0) {
+                    <span class="badge agotado"><span aria-hidden="true">✕</span> Agotado</span>
+                  } @else if (producto.stockBajo) {
+                    <span class="badge bajo"><span aria-hidden="true">⚠</span> Stock bajo</span>
+                  } @else {
+                    <span class="badge ok"><span aria-hidden="true">✓</span> Normal</span>
+                  }
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    class="edit-button"
+                    [attr.aria-label]="'Editar ' + producto.nombre + ' talla ' + producto.talla"
+                    (click)="editar(producto)">
+                    Editar
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (!cargando && productosFiltrados.length) {
+        <app-paginacion
+          [total]="productosFiltrados.length"
+          [porPagina]="porPagina"
+          [pagina]="pagina"
+          (paginaChange)="pagina = $event"
+          etiqueta="Páginas del inventario"
+          nombreElementos="producto(s)"
+          idFoco="titulo-inventario">
+        </app-paginacion>
+      }
+    </section>
+  </main>
+</div>

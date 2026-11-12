@@ -1,0 +1,102 @@
+<div class="instructor-page">
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="/images/logo_puntomarcial.jpg" alt="Punto Marcial" class="brand-logo">
+      <div class="brand-text">
+        <strong>PUNTO MARCIAL</strong>
+        <span>ÁREA DEL INSTRUCTOR</span>
+      </div>
+    </div>
+
+    <button type="button" class="back-button" (click)="volver()">
+      <span aria-hidden="true">←</span> VOLVER A MIS CLASES
+    </button>
+  </header>
+
+  <main id="contenido" tabindex="-1" class="workspace">
+
+    <p class="empty" role="status" *ngIf="cargando">Cargando clase...</p>
+    <p class="feedback error" role="alert" *ngIf="error"><span aria-hidden="true">!</span> {{ error }}</p>
+
+    @if (detalle; as d) {
+      <section class="intro">
+        <span class="eyebrow">CLASE #{{ d.clase.idClase }}</span>
+        <h1>{{ etiquetaDisciplina(d.clase.disciplina) | uppercase }} <strong>SALA {{ d.clase.sala }}.</strong></h1>
+      </section>
+
+      <section class="panel" aria-label="Datos de la clase">
+        <dl class="datos">
+          <div><dt>Fecha</dt><dd>{{ d.clase.horarioInicio | date:'dd/MM/yyyy' }}</dd></div>
+          <div><dt>Horario</dt><dd>{{ d.clase.horarioInicio | date:'HH:mm' }} – {{ d.clase.horarioFin | date:'HH:mm' }}</dd></div>
+          <div><dt>Inscritos</dt><dd>{{ d.inscritos }} / {{ d.clase.aforoMaximo }}</dd></div>
+          <div><dt>Asistieron</dt><dd>{{ d.asistentes }}</dd></div>
+          <div><dt>Sin marcar</dt><dd>{{ d.pendientes }}</dd></div>
+        </dl>
+      </section>
+
+      @if (!d.puedeTomarAsistencia) {
+        <p class="feedback aviso" role="note">
+          <span aria-hidden="true">🔒</span>
+          La asistencia se habilita cuando empiece la clase.
+        </p>
+      }
+
+      <div aria-live="polite">
+        <p class="feedback success" role="status" *ngIf="mensaje"><span aria-hidden="true">✓</span> {{ mensaje }}</p>
+      </div>
+
+      @if (!d.alumnos?.length) {
+        <p class="empty">No hay alumnos inscritos en esta clase.</p>
+      } @else {
+        <section class="panel">
+          <table>
+            <caption>Alumnos inscritos ({{ d.inscritos }})</caption>
+            <thead>
+              <tr>
+                <th scope="col">Alumno</th>
+                <th scope="col">Teléfono</th>
+                <th scope="col">Asistencia</th>
+                <th scope="col"><span class="sr-only">Marcar asistencia</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (alumno of d.alumnos; track alumno.idReserva) {
+                <tr>
+                  <th scope="row">{{ alumno.nombre }} {{ alumno.apellido }}</th>
+                  <td>{{ alumno.telefono }}</td>
+                  <td>
+                    <span class="badge"
+                          [class.asistio]="alumno.asistencia === 'ASISTIO'"
+                          [class.no-asistio]="alumno.asistencia === 'NO_ASISTIO'"
+                          [class.pendiente]="alumno.asistencia === 'PENDIENTE'">
+                      <span aria-hidden="true">{{ alumno.asistencia === 'ASISTIO' ? '✓' : alumno.asistencia === 'NO_ASISTIO' ? '✕' : '…' }}</span>
+                      {{ textoAsistencia(alumno) }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="acciones-asistencia" role="group" [attr.aria-label]="'Asistencia de ' + alumno.nombre + ' ' + alumno.apellido">
+                      <button type="button" class="btn-asistencia si"
+                              [disabled]="!d.puedeTomarAsistencia || guardandoId === alumno.idReserva"
+                              [attr.aria-pressed]="alumno.asistencia === 'ASISTIO'"
+                              (click)="marcar(alumno, 'ASISTIO')">
+                        Asistió
+                      </button>
+                      <button type="button" class="btn-asistencia no"
+                              [disabled]="!d.puedeTomarAsistencia || guardandoId === alumno.idReserva"
+                              [attr.aria-pressed]="alumno.asistencia === 'NO_ASISTIO'"
+                              (click)="marcar(alumno, 'NO_ASISTIO')">
+                        No asistió
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </section>
+      }
+    }
+
+  </main>
+</div>

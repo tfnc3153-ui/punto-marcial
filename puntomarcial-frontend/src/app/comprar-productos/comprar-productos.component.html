@@ -1,0 +1,221 @@
+<div class="shop-page">
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="/images/logo_puntomarcial.jpg" alt="Punto Marcial" class="brand-logo">
+      <div class="brand-text">
+        <strong>PUNTO MARCIAL</strong>
+        <span>TIENDA</span>
+      </div>
+    </div>
+
+    <button type="button" class="back-button" (click)="volver()">
+      <span aria-hidden="true">←</span>
+      MENÚ PRINCIPAL
+    </button>
+  </header>
+
+  <main id="contenido" tabindex="-1" class="workspace">
+
+    <section class="intro">
+      <span class="eyebrow">TIENDA / 02</span>
+      <h1>EQUÍPATE PARA <strong>ENTRENAR.</strong></h1>
+      <p>Equipamiento, protección, ropa y accesorios para MMA, Muay Thai y Box.</p>
+    </section>
+
+    <div class="mensajes">
+      <p class="feedback success" role="status" aria-live="polite" *ngIf="aviso">
+        <span aria-hidden="true">✓</span> {{ aviso }}
+      </p>
+      <p class="feedback error" role="alert" *ngIf="error">
+        <span aria-hidden="true">!</span> {{ error }}
+      </p>
+    </div>
+
+    <div class="layout">
+
+      <!-- CATÁLOGO -->
+      <section class="catalog" aria-labelledby="titulo-catalogo">
+        <div class="section-heading">
+          <span>01 / CATÁLOGO</span>
+          <h2 id="titulo-catalogo" tabindex="-1">Productos</h2>
+        </div>
+
+        <div class="filtros">
+          <div class="field">
+            <label for="filtro-disciplina">Disciplina</label>
+            <select id="filtro-disciplina" name="filtroDisciplina" [(ngModel)]="filtroDisciplina" (ngModelChange)="pagina = 1">
+              <option value="">Todas</option>
+              @for (disciplina of disciplinas; track disciplina.valor) {
+                <option [value]="disciplina.valor">{{ disciplina.etiqueta }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="filtro-categoria">Categoría</label>
+            <select id="filtro-categoria" name="filtroCategoria" [(ngModel)]="filtroCategoria" (ngModelChange)="pagina = 1">
+              <option value="">Todas</option>
+              @for (categoria of categorias; track categoria.valor) {
+                <option [value]="categoria.valor">{{ categoria.etiqueta }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <p class="empty" role="status" *ngIf="cargando">Cargando productos...</p>
+
+        <p class="empty" *ngIf="!cargando && !productosFiltrados.length && !error">
+          No hay productos disponibles con esos filtros.
+        </p>
+
+        <ul class="product-grid" *ngIf="!cargando && productosFiltrados.length">
+          @for (producto of productosDePagina; track producto.idProducto) {
+            <li class="product-card" [class.agotado]="producto.stock === 0">
+              <div class="product-tags">
+                <span>{{ etiquetaDisciplina(producto.disciplina) }}</span>
+                <span>{{ etiquetaCategoria(producto.categoria) }}</span>
+              </div>
+
+              <h3>{{ producto.nombre }}</h3>
+              <p class="talla">Talla / medida: {{ producto.talla }}</p>
+              <p class="precio">S/ {{ producto.precio | number:'1.2-2' }}</p>
+
+              @if (producto.stock === 0) {
+                <p class="stock sin-stock"><span aria-hidden="true">✕</span> Agotado</p>
+              } @else {
+                <p class="stock"><span aria-hidden="true">✓</span> {{ producto.stock }} en stock</p>
+              }
+
+              <div class="add-row">
+                <div class="field cantidad">
+                  <label [for]="'cantidad-' + producto.idProducto">Cantidad</label>
+                  <input
+                    [id]="'cantidad-' + producto.idProducto"
+                    type="number"
+                    min="1"
+                    [max]="producto.stock"
+                    step="1"
+                    inputmode="numeric"
+                    [name]="'cantidad-' + producto.idProducto"
+                    [(ngModel)]="cantidades[producto.idProducto!]"
+                    [disabled]="producto.stock === 0">
+                </div>
+
+                <button
+                  type="button"
+                  class="add-button"
+                  [disabled]="producto.stock === 0"
+                  [attr.aria-label]="'Agregar ' + producto.nombre + ' talla ' + producto.talla + ' al carrito'"
+                  (click)="agregar(producto)">
+                  {{ producto.stock === 0 ? 'SIN STOCK' : 'AGREGAR' }}
+                </button>
+              </div>
+            </li>
+          }
+        </ul>
+
+        @if (!cargando && productosFiltrados.length) {
+          <app-paginacion
+            [total]="productosFiltrados.length"
+            [porPagina]="porPagina"
+            [pagina]="pagina"
+            (paginaChange)="pagina = $event"
+            etiqueta="Páginas del catálogo"
+            nombreElementos="producto(s)"
+            idFoco="titulo-catalogo">
+          </app-paginacion>
+        }
+      </section>
+
+      <!-- CARRITO -->
+      <aside class="cart" aria-labelledby="titulo-carrito">
+        <div class="section-heading">
+          <span>02 / CARRITO</span>
+          <h2 id="titulo-carrito">Tu compra</h2>
+        </div>
+
+        <p class="empty" *ngIf="!carrito.length">El carrito está vacío.</p>
+
+        @if (carrito.length) {
+          <table class="cart-table">
+            <caption class="sr-only">Productos en el carrito con su cantidad y subtotal</caption>
+            <thead>
+              <tr>
+                <th scope="col">Producto</th>
+                <th scope="col">Cant.</th>
+                <th scope="col" class="num">Subtotal</th>
+                <th scope="col"><span class="sr-only">Quitar</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of carrito; track item.producto.idProducto) {
+                <tr>
+                  <th scope="row">
+                    {{ item.producto.nombre }}
+                    <small>{{ item.producto.talla }} · S/ {{ item.producto.precio | number:'1.2-2' }} c/u</small>
+                  </th>
+                  <td>
+                    <label class="sr-only" [for]="'carrito-' + item.producto.idProducto">
+                      Cantidad de {{ item.producto.nombre }}
+                    </label>
+                    <input
+                      class="cart-qty"
+                      [id]="'carrito-' + item.producto.idProducto"
+                      type="number"
+                      min="1"
+                      step="1"
+                      inputmode="numeric"
+                      [ngModel]="item.cantidad"
+                      (ngModelChange)="cambiarCantidad(item, $event)">
+                  </td>
+                  <td class="num">S/ {{ subtotal(item) | number:'1.2-2' }}</td>
+                  <td>
+                    <button
+                      type="button"
+                      class="remove-button"
+                      [attr.aria-label]="'Quitar ' + item.producto.nombre + ' del carrito'"
+                      (click)="quitar(item)">
+                      <span aria-hidden="true">✕</span>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+
+          <div class="total-row">
+            <span>Total ({{ cantidadArticulos }} artículo(s))</span>
+            <strong>S/ {{ total | number:'1.2-2' }}</strong>
+          </div>
+
+          <!-- RESULTADO DE LA VERIFICACIÓN -->
+          @if (verificacion) {
+            <div id="resultado-verificacion" tabindex="-1" class="verificacion">
+              @if (!verificacion.puedeContinuar) {
+                <div class="feedback error" role="alert">
+                  <strong><span aria-hidden="true">!</span> No hay stock suficiente para:</strong>
+                  <ul>
+                    @for (detalle of verificacion.productosSinStock; track detalle) {
+                      <li>{{ detalle }}</li>
+                    }
+                  </ul>
+                  <p>Ajusta las cantidades o quita esos productos para continuar.</p>
+                </div>
+              }
+            </div>
+          }
+
+          <button
+            type="button"
+            class="primary"
+            [disabled]="verificando"
+            (click)="continuarCompra()">
+            {{ verificando ? 'VERIFICANDO STOCK...' : 'CONTINUAR AL PAGO' }}
+          </button>
+        }
+      </aside>
+
+    </div>
+  </main>
+</div>

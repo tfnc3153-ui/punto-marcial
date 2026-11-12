@@ -1,0 +1,236 @@
+<div class="pay-page">
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="/images/logo_puntomarcial.jpg" alt="Punto Marcial" class="brand-logo">
+      <div class="brand-text">
+        <strong>PUNTO MARCIAL</strong>
+        <span>PAGO</span>
+      </div>
+    </div>
+
+    @if (!resultado) {
+      <button type="button" class="back-button" (click)="volverAlCarrito()">
+        <span aria-hidden="true">←</span>
+        VOLVER AL CARRITO
+      </button>
+    } @else {
+      <button type="button" class="back-button" (click)="volverMenu()">
+        <span aria-hidden="true">←</span>
+        MENÚ PRINCIPAL
+      </button>
+    }
+  </header>
+
+  <main id="contenido" tabindex="-1" class="workspace">
+
+    @if (resultado) {
+
+      <!-- COMPRA EXITOSA -->
+      <section id="resultado-pago" tabindex="-1" class="result-panel" aria-labelledby="titulo-resultado">
+        <span class="result-icon" aria-hidden="true">✓</span>
+        <h1 id="titulo-resultado">¡Compra realizada!</h1>
+        <p class="result-message" role="status">{{ resultado.mensaje }}</p>
+
+        @if (resultado.mensajeCorreo) {
+          <p class="mail-message" [class.mail-ok]="resultado.correoEnviado" [class.mail-fail]="!resultado.correoEnviado" role="status">
+            <span aria-hidden="true">{{ resultado.correoEnviado ? '✉' : '⚠' }}</span>
+            {{ resultado.mensajeCorreo }}
+          </p>
+        }
+
+        <dl class="result-data">
+          <div><dt>Boleta</dt><dd>{{ numeroBoleta }}</dd></div>
+          <div><dt>Fecha</dt><dd>{{ resultado.venta.fecha | date:'dd/MM/yyyy HH:mm' }}</dd></div>
+          <div><dt>Tarjeta</dt><dd>**** **** **** {{ resultado.venta.ultimos4 }}</dd></div>
+          <div><dt>Total pagado</dt><dd>S/ {{ resultado.venta.total | number:'1.2-2' }}</dd></div>
+        </dl>
+
+        <table class="detail-table">
+          <caption>Detalle de la compra</caption>
+          <thead>
+            <tr>
+              <th scope="col">Producto</th>
+              <th scope="col" class="num">Cant.</th>
+              <th scope="col" class="num">P. unit.</th>
+              <th scope="col" class="num">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (detalle of resultado.venta.detalles; track detalle.idDetalle) {
+              <tr>
+                <th scope="row">{{ detalle.producto.nombre }} <small>{{ detalle.producto.talla }}</small></th>
+                <td class="num">{{ detalle.cantidad }}</td>
+                <td class="num">S/ {{ detalle.precioUnitario | number:'1.2-2' }}</td>
+                <td class="num">S/ {{ detalle.subtotal | number:'1.2-2' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        <p class="feedback error" role="alert" *ngIf="errorDescarga">
+          <span aria-hidden="true">!</span> {{ errorDescarga }}
+        </p>
+
+        <div class="result-actions">
+          <button type="button" class="primary" [disabled]="descargando" (click)="descargarBoleta()">
+            <span aria-hidden="true">⬇</span>
+            {{ descargando ? 'DESCARGANDO...' : 'DESCARGAR BOLETA (PDF)' }}
+          </button>
+          <button type="button" class="secondary" (click)="irAMisCompras()">VER MIS COMPRAS</button>
+          <button type="button" class="secondary" (click)="volverAlCarrito()">SEGUIR COMPRANDO</button>
+        </div>
+      </section>
+
+    } @else {
+
+      <section class="intro">
+        <span class="eyebrow">TIENDA / PAGO</span>
+        <h1>CONFIRMA TU <strong>PAGO.</strong></h1>
+        <p>Pago simulado con tarjeta. Solo se guardan los últimos 4 dígitos; el CVV nunca se guarda.</p>
+      </section>
+
+      <p class="empty" role="status" *ngIf="cargando">Cargando resumen de la compra...</p>
+
+      @if (!cargando && !resumen && !error) {
+        <div class="empty-cart">
+          <p>Tu carrito está vacío.</p>
+          <button type="button" class="primary" (click)="volverAlCarrito()">IR A LA TIENDA</button>
+        </div>
+      }
+
+      <div id="error-pago" tabindex="-1" class="feedback error" role="alert" *ngIf="error">
+        <span aria-hidden="true">!</span> {{ error }}
+      </div>
+
+      @if (resumen) {
+        <div class="layout">
+
+          <!-- FORMULARIO DE PAGO -->
+          <form class="pay-form" novalidate (ngSubmit)="pagar()" aria-labelledby="titulo-tarjeta">
+            <h2 id="titulo-tarjeta">Datos de la tarjeta</h2>
+
+            <div class="field">
+              <label for="pago-titular">Nombre del titular <span aria-hidden="true">*</span></label>
+              <input
+                id="pago-titular"
+                name="titular"
+                autocomplete="cc-name"
+                [(ngModel)]="pago.titular"
+                required
+                aria-required="true"
+                [attr.aria-invalid]="!!erroresCampo.titular"
+                [attr.aria-describedby]="erroresCampo.titular ? 'error-titular' : null">
+              <small id="error-titular" class="field-error" *ngIf="erroresCampo.titular">{{ erroresCampo.titular }}</small>
+            </div>
+
+            <div class="field">
+              <label for="pago-numeroTarjeta">Número de tarjeta <span aria-hidden="true">*</span></label>
+              <input
+                id="pago-numeroTarjeta"
+                name="numeroTarjeta"
+                autocomplete="cc-number"
+                inputmode="numeric"
+                maxlength="19"
+                placeholder="1234 5678 9012 3456"
+                [ngModel]="pago.numeroTarjeta"
+                (ngModelChange)="formatearTarjeta($event)"
+                required
+                aria-required="true"
+                [attr.aria-invalid]="!!erroresCampo.numeroTarjeta"
+                [attr.aria-describedby]="erroresCampo.numeroTarjeta ? 'error-numeroTarjeta' : 'ayuda-tarjeta'">
+              <small id="ayuda-tarjeta" class="help">16 dígitos.</small>
+              <small id="error-numeroTarjeta" class="field-error" *ngIf="erroresCampo.numeroTarjeta">{{ erroresCampo.numeroTarjeta }}</small>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="pago-vencimiento">Vencimiento <span aria-hidden="true">*</span></label>
+                <input
+                  id="pago-vencimiento"
+                  name="vencimiento"
+                  autocomplete="cc-exp"
+                  inputmode="numeric"
+                  maxlength="5"
+                  placeholder="MM/AA"
+                  [ngModel]="pago.vencimiento"
+                  (ngModelChange)="formatearVencimiento($event)"
+                  required
+                  aria-required="true"
+                  [attr.aria-invalid]="!!erroresCampo.vencimiento"
+                  [attr.aria-describedby]="erroresCampo.vencimiento ? 'error-vencimiento' : 'ayuda-vencimiento'">
+                <small id="ayuda-vencimiento" class="help">Formato MM/AA.</small>
+                <small id="error-vencimiento" class="field-error" *ngIf="erroresCampo.vencimiento">{{ erroresCampo.vencimiento }}</small>
+              </div>
+
+              <div class="field">
+                <label for="pago-cvv">CVV <span aria-hidden="true">*</span></label>
+                <input
+                  id="pago-cvv"
+                  name="cvv"
+                  type="password"
+                  autocomplete="cc-csc"
+                  inputmode="numeric"
+                  maxlength="3"
+                  [(ngModel)]="pago.cvv"
+                  required
+                  aria-required="true"
+                  [attr.aria-invalid]="!!erroresCampo.cvv"
+                  [attr.aria-describedby]="erroresCampo.cvv ? 'error-cvv' : 'ayuda-cvv'">
+                <small id="ayuda-cvv" class="help">3 dígitos al reverso.</small>
+                <small id="error-cvv" class="field-error" *ngIf="erroresCampo.cvv">{{ erroresCampo.cvv }}</small>
+              </div>
+            </div>
+
+            <button type="submit" class="primary pay-button" [disabled]="procesando">
+              {{ procesando ? 'PROCESANDO PAGO...' : 'PAGAR S/ ' + (resumen.total | number:'1.2-2') }}
+            </button>
+          </form>
+
+          <!-- RESUMEN -->
+          <aside class="summary" aria-labelledby="titulo-resumen">
+            <h2 id="titulo-resumen">Resumen</h2>
+
+            <table class="detail-table">
+              <caption class="sr-only">Productos a pagar</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Producto</th>
+                  <th scope="col" class="num">Cant.</th>
+                  <th scope="col" class="num">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of resumen.items; track item.idProducto) {
+                  <tr>
+                    <th scope="row">{{ item.nombre }} <small>{{ item.talla }}</small></th>
+                    <td class="num">{{ item.cantidad }}</td>
+                    <td class="num">S/ {{ item.subtotal | number:'1.2-2' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+
+            <div class="total-row">
+              <span>Total</span>
+              <strong>S/ {{ resumen.total | number:'1.2-2' }}</strong>
+            </div>
+
+            @if (!resumen.puedeContinuar) {
+              <div class="feedback error" role="alert">
+                <strong>No hay stock suficiente para:</strong>
+                <ul>
+                  @for (detalle of resumen.productosSinStock; track detalle) {
+                    <li>{{ detalle }}</li>
+                  }
+                </ul>
+                <button type="button" class="secondary" (click)="volverAlCarrito()">AJUSTAR CARRITO</button>
+              </div>
+            }
+          </aside>
+
+        </div>
+      }
+    }
+  </main>
+</div>

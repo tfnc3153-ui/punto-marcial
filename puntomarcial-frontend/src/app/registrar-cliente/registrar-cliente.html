@@ -1,0 +1,544 @@
+<div class="registration-page">
+
+  <!-- BARRA SUPERIOR -->
+  <header class="topbar">
+
+    <div class="brand">
+      <span class="brand-line" aria-hidden="true"></span>
+
+      <div>
+        <strong>PUNTO MARCIAL</strong>
+        <small>GESTIÓN DE USUARIOS</small>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="back-button"
+      (click)="volver()">
+
+      <span aria-hidden="true">←</span>
+      Panel principal
+
+    </button>
+
+  </header>
+
+
+  <main id="contenido" tabindex="-1" class="registration-content">
+
+    <!-- CABECERA -->
+    <section class="page-intro">
+
+      <div class="title-area">
+
+        <span class="section-code">
+          USUARIOS / 01
+        </span>
+
+        <h1>
+          Nuevo
+          <strong>usuario</strong>
+        </h1>
+
+      </div>
+
+      <div class="intro-copy">
+
+        <span>ALTA DE USUARIO</span>
+
+        <p>
+          Registra a un cliente, instructor o administrador.
+          Según el rol se piden los datos que le corresponden.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- FORMULARIO -->
+    <form
+      class="registration-form"
+      novalidate
+      (ngSubmit)="registrarCliente()">
+
+      <!-- COLUMNA LATERAL -->
+      <aside class="form-index" aria-hidden="true">
+
+        <span class="index-label">
+          REGISTRO
+        </span>
+
+        <div class="index-item active">
+          <span>01</span>
+
+          <div>
+            <strong>Rol e identidad</strong>
+            <small>Tipo de usuario y datos personales</small>
+          </div>
+        </div>
+
+        <div class="index-item">
+          <span>02</span>
+
+          <div>
+            <strong>Contacto</strong>
+            <small>Información de acceso</small>
+          </div>
+        </div>
+
+        <div class="index-item">
+          <span>03</span>
+
+          <div>
+            <strong>Datos del rol</strong>
+            <small>{{ usuario.rol === 'CLIENTE' ? 'Membresía' : usuario.rol === 'INSTRUCTOR' ? 'Disciplina' : 'Código de empleado' }}</small>
+          </div>
+        </div>
+
+      </aside>
+
+
+      <!-- CONTENIDO DEL FORMULARIO -->
+      <div class="form-body">
+
+        <!-- 01 ROL E IDENTIDAD -->
+        <section class="form-section">
+
+          <div class="section-heading">
+
+            <span aria-hidden="true">01</span>
+
+            <div>
+              <h2>Rol e identidad</h2>
+              <p>Elige el tipo de usuario y completa sus datos personales.</p>
+            </div>
+
+          </div>
+
+
+          <div class="fields-grid">
+
+            <div class="field full">
+
+              <label for="campo-rol">
+                Rol
+                <span aria-hidden="true">*</span>
+              </label>
+
+              <select
+                id="campo-rol"
+                name="rol"
+                [(ngModel)]="usuario.rol"
+                required
+                aria-required="true"
+                aria-describedby="ayuda-rol">
+                @for (rol of roles; track rol.valor) {
+                  <option [value]="rol.valor">{{ rol.etiqueta }}</option>
+                }
+              </select>
+
+              <small id="ayuda-rol" class="field-help">
+                El rol define a qué páginas puede entrar el usuario.
+              </small>
+
+            </div>
+
+
+            <div class="field">
+
+              <label for="campo-nombre">
+                Nombre
+                <span aria-hidden="true">*</span>
+              </label>
+
+              <input
+                id="campo-nombre"
+                type="text"
+                name="nombre"
+                [(ngModel)]="usuario.nombre"
+                placeholder="Ej. Jorge"
+                autocomplete="off"
+                required
+                aria-required="true">
+
+            </div>
+
+
+            <div class="field">
+
+              <label for="campo-apellido">
+                Apellido
+                <span aria-hidden="true">*</span>
+              </label>
+
+              <input
+                id="campo-apellido"
+                type="text"
+                name="apellido"
+                [(ngModel)]="usuario.apellido"
+                placeholder="Ej. Ortiz"
+                autocomplete="off"
+                required
+                aria-required="true">
+
+            </div>
+
+
+            <div class="field">
+
+              <label for="campo-tipoDoc">
+                Tipo de documento
+                <span aria-hidden="true">*</span>
+              </label>
+
+              <select
+                id="campo-tipoDoc"
+                name="tipoDoc"
+                [(ngModel)]="usuario.tipoDoc"
+                required
+                aria-required="true">
+
+                <option value="DNI">DNI</option>
+                <option value="CE">Carné de extranjería</option>
+
+              </select>
+
+            </div>
+
+
+            <div class="field">
+
+              <label for="campo-numDoc">
+                Número de documento
+                <span aria-hidden="true">*</span>
+              </label>
+
+              <input
+                id="campo-numDoc"
+                type="text"
+                name="numDoc"
+                [(ngModel)]="usuario.numDoc"
+                [attr.maxlength]="usuario.tipoDoc === 'DNI' ? 8 : 20"
+                [attr.inputmode]="usuario.tipoDoc === 'DNI' ? 'numeric' : null"
+                [attr.aria-invalid]="!!mostrarError('numDoc')"
+                [attr.aria-describedby]="mostrarError('numDoc') ? 'error-numDoc' : null"
+                placeholder="Número de documento"
+                autocomplete="off"
+                required
+                aria-required="true">
+
+              <small id="error-numDoc" class="field-error" *ngIf="mostrarError('numDoc')">
+                {{ mostrarError('numDoc') }}
+              </small>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- 02 CONTACTO -->
+        <section class="form-section">
+
+          <div class="section-heading">
+
+            <span aria-hidden="true">02</span>
+
+            <div>
+              <h2>Contacto y acceso</h2>
+              <p>
+                Con el correo y la contraseña el usuario inicia sesión.
+              </p>
+            </div>
+
+          </div>
+
+
+          <div class="fields-grid">
+
+            <div class="field">
+
+              <label for="campo-correo">
+                Correo electrónico
+                <span aria-hidden="true">*</span>
+              </label>
+
+              <input
+                id="campo-correo"
+                type="email"
+                name="correo"
+                autocomplete="off"
+                [(ngModel)]="usuario.correo"
+                [attr.aria-invalid]="!!mostrarError('correo')"
+                [attr.aria-describedby]="mostrarError('correo') ? 'error-correo' : null"
+                placeholder="usuario@correo.com"
+                required
+                aria-required="true">
+
+              <small id="error-correo" class="field-error" *ngIf="mostrarError('correo')">
+                {{ mostrarError('correo') }}
+              </small>
+
+            </div>
+
+
+            <div class="field">
+
+              <label for="campo-telefono">
+                Teléfono
+                <span aria-hidden="true">*</span>
+              </label>
+
+              <input
+                id="campo-telefono"
+                type="tel"
+                name="telefono"
+                autocomplete="tel"
+                inputmode="numeric"
+                maxlength="9"
+                [(ngModel)]="usuario.telefono"
+                [attr.aria-invalid]="!!mostrarError('telefono')"
+                [attr.aria-describedby]="mostrarError('telefono') ? 'error-telefono' : null"
+                placeholder="999999999"
+                required
+                aria-required="true">
+
+              <small id="error-telefono" class="field-error" *ngIf="mostrarError('telefono')">
+                {{ mostrarError('telefono') }}
+              </small>
+
+            </div>
+
+
+            <div class="field full">
+
+              <label for="campo-password">
+                Contraseña inicial
+                <span aria-hidden="true">*</span>
+              </label>
+
+              <input
+                id="campo-password"
+                type="password"
+                name="password"
+                autocomplete="new-password"
+                [(ngModel)]="usuario.password"
+                [attr.aria-invalid]="!!mostrarError('password')"
+                [attr.aria-describedby]="mostrarError('password') ? 'ayuda-password error-password' : 'ayuda-password'"
+                placeholder="Contraseña de acceso"
+                required
+                aria-required="true">
+
+              <small id="ayuda-password" class="field-help">
+                Mínimo 8 caracteres, con letras y números.
+              </small>
+
+              <small id="error-password" class="field-error" *ngIf="mostrarError('password')">
+                {{ mostrarError('password') }}
+              </small>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- 03 DATOS DEL ROL -->
+        <section class="form-section membership-section">
+
+          <div class="section-heading">
+
+            <span aria-hidden="true">03</span>
+
+            <div>
+              @switch (usuario.rol) {
+                @case ('CLIENTE') {
+                  <h2>Membresía</h2>
+                  <p>Configuración inicial del cliente.</p>
+                }
+                @case ('INSTRUCTOR') {
+                  <h2>Disciplina</h2>
+                  <p>El instructor solo dicta clases de su disciplina.</p>
+                }
+                @default {
+                  <h2>Datos del administrador</h2>
+                  <p>Código interno del empleado.</p>
+                }
+              }
+            </div>
+
+          </div>
+
+
+          <div class="fields-grid">
+
+            @switch (usuario.rol) {
+
+              @case ('CLIENTE') {
+                <div class="field">
+
+                  <label for="campo-estadoMembresia">
+                    Estado de membresía
+                    <span aria-hidden="true">*</span>
+                  </label>
+
+                  <select
+                    id="campo-estadoMembresia"
+                    name="estadoMembresia"
+                    [(ngModel)]="usuario.estadoMembresia"
+                    required
+                    aria-required="true">
+
+                    <option value="VIGENTE">Vigente</option>
+                    <option value="VENCIDA">Vencida</option>
+
+                  </select>
+
+                </div>
+
+
+                <div class="field">
+
+                  <label for="campo-fechaVencimiento">
+                    Fecha de vencimiento
+                  </label>
+
+                  <input
+                    id="campo-fechaVencimiento"
+                    type="date"
+                    name="fechaVencimiento"
+                    [(ngModel)]="usuario.fechaVencimiento">
+
+                </div>
+              }
+
+              @case ('INSTRUCTOR') {
+                <div class="field">
+
+                  <label for="campo-disciplina">
+                    Disciplina
+                    <span aria-hidden="true">*</span>
+                  </label>
+
+                  <select
+                    id="campo-disciplina"
+                    name="disciplina"
+                    [(ngModel)]="usuario.disciplina"
+                    required
+                    aria-required="true">
+
+                    <option value="" disabled>Elige una disciplina</option>
+                    @for (disciplina of disciplinas; track disciplina.valor) {
+                      <option [value]="disciplina.valor">{{ disciplina.etiqueta }}</option>
+                    }
+
+                  </select>
+
+                </div>
+              }
+
+              @default {
+                <div class="field">
+
+                  <label for="campo-codigoEmpleado">
+                    Código de empleado
+                    <span aria-hidden="true">*</span>
+                  </label>
+
+                  <input
+                    id="campo-codigoEmpleado"
+                    type="text"
+                    name="codigoEmpleado"
+                    maxlength="20"
+                    autocomplete="off"
+                    [(ngModel)]="usuario.codigoEmpleado"
+                    placeholder="Ej. ADM002"
+                    required
+                    aria-required="true">
+
+                </div>
+              }
+
+            }
+
+          </div>
+
+        </section>
+
+
+        <!-- MENSAJES -->
+
+        <div
+          *ngIf="mensaje"
+          class="feedback success"
+          role="status"
+          aria-live="polite">
+
+          <span aria-hidden="true">✓</span>
+
+          <div>
+            <strong>Registro completado</strong>
+            <p>{{ mensaje }}</p>
+          </div>
+
+        </div>
+
+
+        <div
+          *ngIf="error"
+          class="feedback error"
+          role="alert">
+
+          <span aria-hidden="true">!</span>
+
+          <div>
+            <strong>No se pudo completar el registro</strong>
+            <p>{{ error }}</p>
+          </div>
+
+        </div>
+
+
+        <!-- ACCIONES -->
+        <footer class="form-actions">
+
+          <button
+            type="button"
+            class="clear-button"
+            (click)="limpiarFormulario()">
+
+            LIMPIAR
+
+          </button>
+
+
+          <button
+            type="submit"
+            class="register-button"
+            [disabled]="cargando">
+
+            <span>
+              {{
+                cargando
+                  ? 'REGISTRANDO...'
+                  : 'REGISTRAR USUARIO'
+              }}
+            </span>
+
+            <strong aria-hidden="true">→</strong>
+
+          </button>
+
+        </footer>
+
+      </div>
+
+    </form>
+
+  </main>
+
+</div>

@@ -1,0 +1,125 @@
+.accesibilidad {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+/* Botón flotante con engranaje */
+.engranaje {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border: var(--grosor-borde) solid var(--color-texto);
+  border-radius: 50%;
+  background: var(--color-texto);
+  color: var(--color-superficie);
+  box-shadow: var(--sombra-panel);
+  cursor: pointer;
+}
+
+.engranaje svg {
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
+  transition: transform 300ms ease;
+}
+
+.engranaje:hover svg,
+.engranaje[aria-expanded='true'] svg {
+  transform: rotate(60deg);
+}
+
+/* Panel de opciones */
+.panel {
+  width: min(320px, calc(100vw - 40px));
+  padding: 20px;
+  border: var(--grosor-borde) solid var(--color-borde);
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  box-shadow: var(--sombra-panel);
+}
+
+.panel-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.panel-cabecera h2 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.cerrar {
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--color-texto);
+  font-size: 1.125rem;
+  cursor: pointer;
+}
+
+.grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 0;
+  border-top: var(--grosor-borde) solid var(--color-borde);
+}
+
+.etiqueta {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.opciones {
+  display: flex;
+  gap: 8px;
+}
+
+.opcion {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: var(--grosor-borde) solid var(--color-borde-control);
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.opciones .opcion {
+  flex: 1;
+}
+
+.opcion:hover {
+  background: var(--color-superficie-alt);
+}
+
+.opcion[aria-pressed='true'] {
+  background: var(--color-texto);
+  border-color: var(--color-texto);
+  color: var(--color-superficie);
+}
+
+.contraste {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+}
+
+.icono-contraste {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}

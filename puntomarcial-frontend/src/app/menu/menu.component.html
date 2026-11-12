@@ -1,0 +1,204 @@
+<div class="client-page">
+
+  <!-- HEADER -->
+  <header class="topbar">
+
+    <div class="brand">
+
+      <img
+        src="/images/logo_puntomarcial.jpg"
+        alt="Punto Marcial"
+        class="brand-logo">
+
+      <div class="brand-text">
+        <strong>PUNTO MARCIAL</strong>
+        <span>ÁREA DEL CLIENTE</span>
+      </div>
+
+    </div>
+
+    <button
+      type="button"
+      class="logout-button"
+      aria-label="Cerrar sesión"
+      (click)="cerrarSesion()">
+
+      <span>CERRAR SESIÓN</span>
+      <strong aria-hidden="true">↗</strong>
+
+    </button>
+
+  </header>
+
+
+  <main id="contenido" tabindex="-1" class="workspace">
+
+    <!-- PRESENTACIÓN -->
+    <section class="hero">
+
+      <div class="hero-main">
+
+        <span class="eyebrow">
+          PLATAFORMA DEL ALUMNO
+        </span>
+
+        <h1>
+          TU ESPACIO DE<br>
+          <strong>ENTRENAMIENTO.</strong>
+        </h1>
+
+      </div>
+
+      <div class="hero-description">
+
+        <span class="hero-number" aria-hidden="true">01</span>
+
+        <p>
+          Reserva tus clases, consulta tus movimientos
+          y accede a los servicios disponibles de
+          Punto Marcial.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- NAVEGACIÓN PRINCIPAL -->
+    <section class="menu-modules">
+
+      <!-- RESERVAR -->
+      <button
+        type="button"
+        class="module module-featured"
+        (click)="reservar()">
+
+        <span class="module-number" aria-hidden="true">01</span>
+
+        <div class="module-content">
+
+          <span class="module-category">
+            ENTRENAMIENTO
+          </span>
+
+          <h2>Reservar una clase</h2>
+
+          <p>
+            Consulta la programación disponible
+            y asegura tu horario de entrenamiento.
+          </p>
+
+        </div>
+
+        <span class="module-arrow" aria-hidden="true">→</span>
+
+      </button>
+
+
+      <!-- COMPRAR -->
+      <button
+        type="button"
+        class="module"
+        (click)="comprar()">
+
+        <span class="module-number" aria-hidden="true">02</span>
+
+        <div class="module-content">
+
+          <span class="module-category">
+            TIENDA
+          </span>
+
+          <h2>Comprar productos</h2>
+
+          <p>
+            Explora los productos disponibles
+            para complementar tu entrenamiento.
+          </p>
+
+        </div>
+
+        <span class="module-arrow" aria-hidden="true">→</span>
+
+      </button>
+
+
+      <!-- MIS RESERVAS -->
+      <button
+        type="button"
+        class="module"
+        (click)="misReservas()">
+
+        <span class="module-number" aria-hidden="true">03</span>
+
+        <div class="module-content">
+
+          <span class="module-category">
+            ACTIVIDAD
+          </span>
+
+          <h2>Mis reservas</h2>
+
+          <p>
+            Revisa las clases que has reservado
+            y consulta su información.
+          </p>
+
+        </div>
+
+        <span class="module-arrow" aria-hidden="true">→</span>
+
+      </button>
+
+
+      <!-- MIS COMPRAS -->
+      <button
+        type="button"
+        class="module"
+        (click)="misCompras()">
+
+        <span class="module-number" aria-hidden="true">04</span>
+
+        <div class="module-content">
+
+          <span class="module-category">
+            COMPRAS
+          </span>
+
+          <h2>Mis compras</h2>
+
+          <p>
+            Consulta tus compras realizadas
+            y los comprobantes generados.
+          </p>
+
+        </div>
+
+        <span class="module-arrow" aria-hidden="true">→</span>
+
+      </button>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer class="page-footer">
+
+      <div>
+        <span class="footer-dot" aria-hidden="true"></span>
+        <strong>PUNTO MARCIAL</strong>
+      </div>
+
+      <span>
+        DISCIPLINA · CONSTANCIA · SUPERACIÓN
+      </span>
+
+      <span>
+        © 2026
+      </span>
+
+    </footer>
+
+  </main>
+
+</div>

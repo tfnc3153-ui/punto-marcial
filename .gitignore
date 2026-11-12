@@ -1,0 +1,9 @@
+target/
+node_modules/
+dist/
+.angular/
+*.zip
+*.log
+~$*
+.vscode/
+iniciar-backend.ps1

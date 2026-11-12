@@ -1,0 +1,31 @@
+<div class="paginacion-contenedor">
+  <p class="rango" aria-live="polite">
+    Mostrando {{ rango }}@if (totalPaginas > 1) { · página {{ actual }} de {{ totalPaginas }} }
+  </p>
+
+  @if (totalPaginas > 1) {
+    <nav class="paginacion" [attr.aria-label]="etiqueta">
+      <button type="button" class="page-button" [disabled]="actual === 1" (click)="irA(actual - 1)">
+        <span aria-hidden="true">←</span> Anterior
+      </button>
+
+      <ul>
+        @for (numero of paginas; track numero) {
+          <li>
+            <button type="button" class="page-button numero"
+                    [class.actual]="numero === actual"
+                    [attr.aria-current]="numero === actual ? 'page' : null"
+                    [attr.aria-label]="'Página ' + numero"
+                    (click)="irA(numero)">
+              {{ numero }}
+            </button>
+          </li>
+        }
+      </ul>
+
+      <button type="button" class="page-button" [disabled]="actual === totalPaginas" (click)="irA(actual + 1)">
+        Siguiente <span aria-hidden="true">→</span>
+      </button>
+    </nav>
+  }
+</div>

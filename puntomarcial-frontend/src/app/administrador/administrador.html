@@ -1,0 +1,224 @@
+<div class="admin-shell">
+
+  <!-- BARRA SUPERIOR -->
+  <header class="topbar">
+
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+
+      <div>
+        <strong>PUNTO MARCIAL</strong>
+        <span>ADMINISTRACIÓN</span>
+      </div>
+    </div>
+
+    <div class="session">
+      <span class="status" aria-hidden="true"></span>
+      Administrador
+
+      <button
+        type="button"
+        class="logout-button"
+        (click)="cerrarSesion()">
+        CERRAR SESIÓN
+      </button>
+    </div>
+
+  </header>
+
+
+  <main id="contenido" tabindex="-1" class="workspace">
+
+    <!-- PRESENTACIÓN DEL PANEL -->
+    <section class="intro">
+
+      <span class="eyebrow">
+        CONTROL CENTER
+      </span>
+
+      <h1>
+        Panel de
+        <span>administración</span>
+      </h1>
+
+      <p>
+        Gestiona clientes, clases, productos y capacidad
+        desde un solo lugar.
+      </p>
+
+    </section>
+
+
+    <!-- FUNCIONES DEL ADMINISTRADOR -->
+    <section class="modules">
+
+
+      <!-- 01 -->
+      <button
+        type="button"
+        class="module"
+        (click)="registrarUsuario()">
+
+        <div class="module-number" aria-hidden="true">
+          01
+        </div>
+
+        <div class="module-info">
+
+          <span class="module-category">
+            USUARIOS
+          </span>
+
+          <h2>
+            Registrar usuario
+          </h2>
+
+          <p>
+            Crear un cliente, instructor o administrador.
+          </p>
+
+        </div>
+
+        <span class="arrow" aria-hidden="true">
+          →
+        </span>
+
+      </button>
+
+
+      <!-- 02 -->
+      <button
+        type="button"
+        class="module"
+        (click)="actualizarUsuario()">
+
+        <div class="module-number" aria-hidden="true">
+          02
+        </div>
+
+        <div class="module-info">
+
+          <span class="module-category">
+            USUARIOS
+          </span>
+
+          <h2>
+            Actualizar usuario
+          </h2>
+
+          <p>
+            Modificar datos o activar y desactivar usuarios.
+          </p>
+
+        </div>
+
+        <span class="arrow" aria-hidden="true">
+          →
+        </span>
+
+      </button>
+
+
+      <!-- 03 -->
+      <button
+        type="button"
+        class="module"
+        (click)="gestionarClases()">
+
+        <div class="module-number" aria-hidden="true">
+          03
+        </div>
+
+        <div class="module-info">
+
+          <span class="module-category">
+            OPERACIÓN
+          </span>
+
+          <h2>
+            Gestionar clases
+          </h2>
+
+          <p>
+            Organizar horarios, disciplinas, salas e instructores.
+          </p>
+
+        </div>
+
+        <span class="arrow" aria-hidden="true">
+          →
+        </span>
+
+      </button>
+
+
+      <!-- 04 -->
+      <button
+        type="button"
+        class="module"
+        (click)="gestionarProductos()">
+
+        <div class="module-number" aria-hidden="true">
+          04
+        </div>
+
+        <div class="module-info">
+
+          <span class="module-category">
+            TIENDA
+          </span>
+
+          <h2>
+            Gestionar productos
+          </h2>
+
+          <p>
+            Administrar los productos disponibles en la academia.
+          </p>
+
+        </div>
+
+        <span class="arrow" aria-hidden="true">
+          →
+        </span>
+
+      </button>
+
+
+      <!-- 05 -->
+      <button
+        type="button"
+        class="module"
+        (click)="supervisarAforo()">
+
+        <div class="module-number" aria-hidden="true">
+          05
+        </div>
+
+        <div class="module-info">
+
+          <span class="module-category">
+            CAPACIDAD
+          </span>
+
+          <h2>
+            Supervisar aforo
+          </h2>
+
+          <p>
+            Controlar ocupación y disponibilidad de las clases.
+          </p>
+
+        </div>
+
+        <span class="arrow" aria-hidden="true">
+          →
+        </span>
+
+      </button>
+
+    </section>
+
+  </main>
+
+</div>

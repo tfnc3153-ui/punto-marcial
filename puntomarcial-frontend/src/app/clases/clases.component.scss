@@ -1,0 +1,1058 @@
+:host {
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+
+/* =====================================================
+   PÁGINA
+===================================================== */
+
+.classes-page {
+  min-height: 100vh;
+
+  background:
+    linear-gradient(
+      var(--color-cuadricula) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      var(--color-cuadricula) 1px,
+      transparent 1px
+    ),
+    var(--color-fondo);
+
+  background-size: 46px 46px;
+
+  color: var(--color-texto);
+
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.topbar {
+  height: 82px;
+
+  padding: 0 5%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: var(--color-superficie);
+
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+
+  gap: 15px;
+}
+
+.brand-logo {
+  width: 48px;
+  height: 48px;
+
+  display: block;
+
+  object-fit: contain;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.brand-text strong {
+  color: var(--color-texto);
+
+  font-size: 0.8125rem;
+  font-weight: 900;
+
+  letter-spacing: 2px;
+}
+
+.brand-text span {
+  color: var(--color-texto-secundario);
+
+  font-size: 0.8125rem;
+  font-weight: 700;
+
+  letter-spacing: 2.3px;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--color-texto-secundario);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+}
+
+.back-button span { color: var(--color-marca); }
+.back-button:hover { color: var(--color-texto); }
+
+.header-status {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  color: var(--color-texto-secundario);
+
+  font-size: 0.8125rem;
+  font-weight: 900;
+
+  letter-spacing: 1.6px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: var(--color-marca);
+
+  box-shadow:
+    0 0 0 4px var(--color-marca-tenue);
+}
+
+
+/* =====================================================
+   WORKSPACE
+===================================================== */
+
+.workspace {
+  width: min(1250px, 90%);
+
+  margin: 0 auto;
+
+  padding: 60px 0 30px;
+}
+
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.hero {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    340px;
+
+  align-items: end;
+
+  gap: 70px;
+
+  padding-bottom: 50px;
+
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.eyebrow {
+  display: block;
+
+  margin-bottom: 15px;
+
+  color: var(--color-marca);
+
+  font-size: 0.8125rem;
+  font-weight: 900;
+
+  letter-spacing: 2.7px;
+}
+
+.hero h1 {
+  margin: 0;
+
+  color: var(--color-texto);
+
+  font-size: clamp(2.6875rem, 5vw, 4.1875rem);
+  font-weight: 900;
+
+  line-height: 0.91;
+
+  letter-spacing: -3px;
+}
+
+.hero h1 strong {
+  color: var(--color-marca);
+}
+
+.hero-info {
+  display: grid;
+
+  grid-template-columns: 30px 1fr;
+
+  gap: 18px;
+}
+
+.hero-info > span {
+  color: var(--color-marca);
+
+  font-size: 0.8125rem;
+  font-weight: 900;
+}
+
+.hero-info p {
+  margin: 0;
+
+  color: var(--color-texto-secundario);
+
+  font-size: 0.8125rem;
+
+  line-height: 1.8;
+}
+
+
+/* =====================================================
+   PROGRAMACIÓN
+===================================================== */
+
+.schedule-section {
+  margin-top: 48px;
+
+  border-top: 1px solid var(--color-borde);
+  border-left: 1px solid var(--color-borde);
+  border-right: 1px solid var(--color-borde);
+}
+
+.schedule-header {
+  min-height: 100px;
+
+  padding: 25px 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  background: var(--color-superficie);
+
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.schedule-header .eyebrow {
+  margin-bottom: 7px;
+}
+
+.schedule-header h2 {
+  margin: 0;
+
+  color: var(--color-texto);
+
+  font-size: 1.25rem;
+  font-weight: 750;
+
+  letter-spacing: -0.5px;
+}
+
+
+/* CONTADOR */
+
+.classes-count {
+  display: flex;
+  align-items: baseline;
+
+  gap: 7px;
+}
+
+.classes-count strong {
+  color: var(--color-marca);
+
+  font-size: 1.8125rem;
+  font-weight: 900;
+}
+
+.classes-count span {
+  color: var(--color-texto-secundario);
+
+  font-size: 0.8125rem;
+  font-weight: 900;
+
+  letter-spacing: 1.5px;
+}
+
+
+/* =====================================================
+   CABECERA TABLA
+===================================================== */
+
+.table-head {
+  min-height: 42px;
+
+  padding: 0 25px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(240px, 1.5fr)
+    minmax(180px, 1fr)
+    minmax(100px, 0.65fr)
+    minmax(145px, 0.75fr)
+    145px;
+
+  align-items: center;
+
+  gap: 20px;
+
+  background: var(--color-superficie);
+
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.table-head span {
+  color: var(--color-texto-secundario);
+
+  font-size: 0.8125rem;
+  font-weight: 900;
+
+  letter-spacing: 1.7px;
+}
+
+
+/* =====================================================
+   LISTA
+===================================================== */
+
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.class-row {
+  min-height: 115px;
+
+  padding: 20px 25px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(240px, 1.5fr)
+    minmax(180px, 1fr)
+    minmax(100px, 0.65fr)
+    minmax(145px, 0.75fr)
+    145px;
+
+  align-items: center;
+
+  gap: 20px;
+
+  position: relative;
+
+  background: var(--color-superficie);
+
+  border-bottom: 1px solid var(--color-borde);
+
+  transition:
+    background 160ms ease,
+    padding-left 160ms ease;
+}
+
+.class-row::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 0;
+
+  width: 3px;
+  height: 100%;
+
+  background: var(--color-marca);
+
+  transform: scaleY(0);
+
+  transition: transform 160ms ease;
+}
+
+.class-row:hover {
+  padding-left: 29px;
+
+  background: var(--color-superficie);
+}
+
+.class-row:hover::before {
+  transform: scaleY(1);
+}
+
+
+/* =====================================================
+   LABEL GENERAL
+===================================================== */
+
+.row-label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: var(--color-texto-secundario);
+
+  font-size: 0.8125rem;
+  font-weight: 900;
+
+  letter-spacing: 1.5px;
+}
+
+
+/* =====================================================
+   DISCIPLINA
+===================================================== */
+
+.discipline-column {
+  display: flex;
+  align-items: center;
+
+  gap: 17px;
+}
+
+.discipline-index {
+  width: 46px;
+  height: 46px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--color-borde);
+
+  color: var(--color-marca);
+
+  font-size: 0.8125rem;
+  font-weight: 900;
+
+  letter-spacing: 1px;
+
+  transition:
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.class-row:hover .discipline-index {
+  border-color: var(--color-error);
+
+  background: var(--color-marca-tenue);
+}
+
+.discipline-column h3 {
+  margin: 0;
+
+  color: var(--color-texto);
+
+  font-size: 1rem;
+  font-weight: 800;
+
+  letter-spacing: -0.3px;
+}
+
+.instructor {
+  display: block;
+
+  margin-top: 5px;
+
+  color: var(--color-texto-secundario);
+
+  font-size: 0.8125rem;
+}
+
+
+/* =====================================================
+   HORARIO
+===================================================== */
+
+.time-column {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.time-column strong {
+  color: var(--color-texto);
+
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.time-column > span:last-child {
+  color: var(--color-texto-secundario);
+
+  font-size: 0.8125rem;
+}
+
+
+/* =====================================================
+   SALA
+===================================================== */
+
+.room-column {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.room-column strong {
+  color: var(--color-texto);
+
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+
+/* =====================================================
+   AFORO
+===================================================== */
+
+.capacity-column {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.capacity-value {
+  display: flex;
+  align-items: baseline;
+
+  gap: 4px;
+}
+
+.capacity-value strong {
+  color: var(--color-marca);
+
+  font-size: 1.375rem;
+  font-weight: 900;
+}
+
+.capacity-value > span {
+  color: var(--color-texto-secundario);
+
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+
+/* ESTADO */
+
+.availability {
+  margin-top: 2px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: var(--color-texto-secundario);
+
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.availability i {
+  width: 5px;
+  height: 5px;
+
+  display: block;
+
+  border-radius: 50%;
+
+  background: var(--color-marca);
+}
+
+.availability.full {
+  color: var(--color-texto-secundario);
+}
+
+.availability.full i {
+  background: var(--color-borde);
+}
+
+
+/* =====================================================
+   ACCIÓN
+===================================================== */
+
+.action-column {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.select-button {
+  width: 140px;
+  height: 42px;
+
+  padding: 0 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border: 1px solid var(--color-marca);
+
+  background: transparent;
+
+  color: var(--color-marca);
+
+  font-size: 0.8125rem;
+  font-weight: 900;
+
+  letter-spacing: 1.1px;
+
+  cursor: pointer;
+
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease;
+}
+
+.select-button strong {
+  font-size: 1.0625rem;
+  font-weight: 400;
+
+  transition: transform 160ms ease;
+}
+
+.select-button:hover:not(:disabled) {
+  background: var(--color-marca);
+
+  color: var(--color-sobre-marca);
+}
+
+.select-button:hover:not(:disabled) strong {
+  transform: translateX(3px);
+}
+
+.select-button:disabled {
+  border-color: var(--color-borde);
+
+  color: var(--color-texto-secundario);
+
+  cursor: not-allowed;
+}
+
+
+/* =====================================================
+   CARGANDO
+===================================================== */
+
+.loading-state {
+  min-height: 150px;
+
+  margin-top: 45px;
+
+  padding: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 18px;
+
+  border: 1px solid var(--color-borde);
+
+  background: var(--color-superficie);
+}
+
+.loading-state strong {
+  display: block;
+
+  color: var(--color-texto);
+
+  font-size: 0.8125rem;
+  font-weight: 900;
+
+  letter-spacing: 1.5px;
+}
+
+.loading-state p {
+  margin: 6px 0 0;
+
+  color: var(--color-texto-secundario);
+
+  font-size: 0.8125rem;
+}
+
+.loading-spinner {
+  width: 26px;
+  height: 26px;
+
+  border: 2px solid var(--color-borde);
+  border-top-color: var(--color-marca);
+
+  border-radius: 50%;
+
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =====================================================
+   ERROR
+===================================================== */
+
+.message-error {
+  margin-top: 45px;
+
+  padding: 22px 25px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 15px;
+
+  border: 1px solid var(--color-error);
+
+  background: var(--color-marca-tenue);
+}
+
+.error-symbol {
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--color-marca);
+
+  color: var(--color-marca);
+
+  font-size: 0.8125rem;
+  font-weight: 900;
+}
+
+.message-error strong {
+  color: var(--color-texto);
+
+  font-size: 0.8125rem;
+  font-weight: 900;
+
+  letter-spacing: 1px;
+}
+
+.message-error p {
+  margin: 5px 0 0;
+
+  color: var(--color-error);
+
+  font-size: 0.8125rem;
+}
+
+
+/* =====================================================
+   SIN CLASES
+===================================================== */
+
+.empty-state {
+  min-height: 220px;
+
+  margin-top: 45px;
+
+  padding: 35px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 30px;
+
+  border: 1px solid var(--color-borde);
+
+  background: var(--color-superficie);
+}
+
+.empty-number {
+  color: var(--color-texto);
+
+  font-size: 3.4375rem;
+  font-weight: 900;
+
+  letter-spacing: -3px;
+}
+
+.empty-state .eyebrow {
+  margin-bottom: 7px;
+}
+
+.empty-state h3 {
+  margin: 0;
+
+  color: var(--color-texto);
+
+  font-size: 1.125rem;
+}
+
+.empty-state p {
+  margin: 7px 0 0;
+
+  color: var(--color-texto-secundario);
+
+  font-size: 0.8125rem;
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.page-footer {
+  min-height: 75px;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    auto
+    1fr;
+
+  align-items: center;
+
+  gap: 30px;
+
+  color: var(--color-texto-secundario);
+
+  font-size: 0.8125rem;
+  font-weight: 700;
+
+  letter-spacing: 1.5px;
+}
+
+.page-footer > div {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+}
+
+.page-footer > span:last-child {
+  justify-self: end;
+}
+
+.footer-dot {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: var(--color-marca);
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 1000px) {
+
+  .table-head {
+    display: none;
+  }
+
+  .class-row {
+    grid-template-columns:
+      minmax(220px, 1.3fr)
+      minmax(160px, 1fr)
+      100px
+      120px;
+
+    gap: 15px;
+  }
+
+  .action-column {
+    grid-column: 1 / -1;
+
+    justify-content: flex-end;
+
+    padding-top: 12px;
+
+    border-top: 1px solid var(--color-borde);
+  }
+
+  .select-button {
+    width: 160px;
+  }
+}
+
+
+/* =====================================================
+   TABLET PEQUEÑA
+===================================================== */
+
+@media (max-width: 800px) {
+
+  .hero {
+    grid-template-columns: 1fr;
+
+    gap: 30px;
+  }
+
+  .hero-info {
+    max-width: 450px;
+  }
+
+  .class-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .discipline-column {
+    grid-column: 1 / -1;
+  }
+
+  .action-column {
+    grid-column: 1 / -1;
+  }
+
+  .page-footer {
+    grid-template-columns: 1fr auto;
+  }
+
+  .page-footer > span:nth-child(2) {
+    display: none;
+  }
+}
+
+
+/* =====================================================
+   MÓVIL
+===================================================== */
+
+@media (max-width: 560px) {
+
+  .topbar {
+    height: 72px;
+
+    padding: 0 20px;
+  }
+
+  .brand-logo {
+    width: 42px;
+    height: 42px;
+  }
+
+  .brand-text span,
+  .header-status {
+    display: none;
+  }
+
+
+  .workspace {
+    width: calc(100% - 36px);
+
+    padding-top: 42px;
+  }
+
+
+  .hero {
+    padding-bottom: 40px;
+  }
+
+  .hero h1 {
+    font-size: 2.375rem;
+
+    letter-spacing: -2px;
+  }
+
+
+  .schedule-section {
+    margin-top: 35px;
+  }
+
+  .schedule-header {
+    min-height: 90px;
+
+    padding: 20px;
+  }
+
+  .classes-count strong {
+    font-size: 1.5rem;
+  }
+
+
+  .class-row {
+    grid-template-columns: 1fr;
+
+    padding: 25px 20px;
+
+    gap: 20px;
+  }
+
+  .class-row:hover {
+    padding-left: 23px;
+  }
+
+  .discipline-column,
+  .time-column,
+  .room-column,
+  .capacity-column,
+  .action-column {
+    grid-column: 1;
+  }
+
+  .time-column,
+  .room-column,
+  .capacity-column {
+    padding-left: 63px;
+  }
+
+  .action-column {
+    padding-top: 18px;
+  }
+
+  .select-button {
+    width: 100%;
+  }
+
+
+  .empty-state {
+    padding: 25px 20px;
+
+    gap: 20px;
+  }
+
+  .empty-number {
+    font-size: 2.625rem;
+  }
+
+
+  .page-footer {
+    grid-template-columns: 1fr auto;
+  }
+
+  .page-footer > span:nth-child(2) {
+    display: none;
+  }
+}

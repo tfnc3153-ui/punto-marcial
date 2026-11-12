@@ -1,0 +1,193 @@
+<div class="purchases-page">
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="/images/logo_puntomarcial.jpg" alt="Punto Marcial" class="brand-logo">
+      <div class="brand-text">
+        <strong>PUNTO MARCIAL</strong>
+        <span>ÁREA DEL CLIENTE</span>
+      </div>
+    </div>
+
+    <button type="button" class="back-button" (click)="volver()">
+      <span aria-hidden="true">←</span>
+      MENÚ PRINCIPAL
+    </button>
+  </header>
+
+  <main id="contenido" tabindex="-1" class="workspace">
+
+    <section class="intro">
+      <span class="eyebrow">COMPRAS / 04</span>
+      <h1>MIS <strong>COMPRAS.</strong></h1>
+      <p>Consulta tus compras y el detalle de cada una.</p>
+    </section>
+
+    <p class="empty" role="status" *ngIf="cargando">Consultando tus compras...</p>
+    <p class="feedback error" role="alert" *ngIf="error">
+      <span aria-hidden="true">!</span> {{ error }}
+    </p>
+
+    @if (!cargando && !error && !ventas.length) {
+      <div class="empty-box">
+        <p>Todavía no tienes compras.</p>
+        <button type="button" class="primary" (click)="irATienda()">IR A LA TIENDA</button>
+      </div>
+    }
+
+    @if (!cargando && ventas.length) {
+      <p class="summary">
+        {{ ventas.length }} compra(s) registradas · {{ comprasPagadas }} pagada(s)
+      </p>
+
+      <!-- FILTROS -->
+      <form class="filtros" role="search" aria-label="Filtrar compras" (submit)="$event.preventDefault()">
+        <div class="field">
+          <label for="filtro-estado">Estado</label>
+          <select id="filtro-estado" name="filtroEstado" [(ngModel)]="filtroEstado" (ngModelChange)="aplicarFiltros()">
+            <option value="">Todas</option>
+            <option value="PAGADA">Pagadas</option>
+            <option value="RECHAZADA">Pago rechazado</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="filtro-desde">Desde</label>
+          <input id="filtro-desde" name="filtroDesde" type="date" [(ngModel)]="filtroDesde" (ngModelChange)="aplicarFiltros()">
+        </div>
+
+        <div class="field">
+          <label for="filtro-hasta">Hasta</label>
+          <input id="filtro-hasta" name="filtroHasta" type="date" [(ngModel)]="filtroHasta" (ngModelChange)="aplicarFiltros()">
+        </div>
+
+        <div class="field grow">
+          <label for="filtro-producto">Producto</label>
+          <input id="filtro-producto" name="filtroProducto" type="search" placeholder="Ej. guantes"
+                 [(ngModel)]="filtroProducto" (ngModelChange)="aplicarFiltros()">
+        </div>
+
+        <button type="button" class="secondary" [disabled]="!hayFiltros" (click)="limpiarFiltros()">
+          LIMPIAR FILTROS
+        </button>
+      </form>
+
+      <h2 id="titulo-lista-compras" class="list-title" tabindex="-1">
+        Mostrando {{ rangoMostrado }}
+      </h2>
+      <p class="sr-only" aria-live="polite">{{ rangoMostrado }}, página {{ paginaActual }} de {{ totalPaginas }}</p>
+
+      @if (!ventasFiltradas.length) {
+        <p class="empty-box">Ninguna compra coincide con los filtros.</p>
+      }
+
+      <div class="purchase-list">
+        @for (venta of ventasDeLaPagina; track venta.idVenta) {
+          <article class="purchase" [class.rechazada]="venta.estado === 'RECHAZADA'"
+                   [attr.aria-labelledby]="'compra-' + venta.idVenta">
+            <div class="purchase-head">
+              <div>
+                <h3 [id]="'compra-' + venta.idVenta">Compra N.° {{ venta.idVenta }}</h3>
+                <p>
+                  @if (venta.estado === 'PAGADA') { Boleta {{ numeroBoleta(venta.idVenta) }} · }
+                  {{ venta.fecha | date:'dd/MM/yyyy HH:mm' }}
+                  @if (venta.ultimos4) { · Tarjeta **** {{ venta.ultimos4 }} }
+                </p>
+              </div>
+
+              @switch (venta.estado) {
+                @case ('PAGADA') {
+                  <span class="badge pagada"><span aria-hidden="true">✓</span> Pagada</span>
+                }
+                @case ('RECHAZADA') {
+                  <span class="badge rechazada"><span aria-hidden="true">✕</span> Pago rechazado</span>
+                }
+                @default {
+                  <span class="badge pendiente"><span aria-hidden="true">…</span> Pendiente</span>
+                }
+              }
+            </div>
+
+            <table>
+              <caption class="sr-only">Detalle de la compra {{ venta.idVenta }}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Producto</th>
+                  <th scope="col">Talla</th>
+                  <th scope="col" class="num">Cant.</th>
+                  <th scope="col" class="num">P. unit.</th>
+                  <th scope="col" class="num">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (detalle of venta.detalles; track detalle.idDetalle) {
+                  <tr>
+                    <th scope="row">{{ detalle.producto.nombre }}</th>
+                    <td>{{ detalle.producto.talla }}</td>
+                    <td class="num">{{ detalle.cantidad }}</td>
+                    <td class="num">S/ {{ detalle.precioUnitario | number:'1.2-2' }}</td>
+                    <td class="num">S/ {{ detalle.subtotal | number:'1.2-2' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+
+            <div class="purchase-footer">
+              @if (venta.estado === 'PAGADA') {
+                <button
+                  type="button"
+                  class="download-button"
+                  [disabled]="descargandoId === venta.idVenta"
+                  [attr.aria-label]="'Descargar boleta ' + numeroBoleta(venta.idVenta) + ' en PDF'"
+                  (click)="descargarBoleta(venta)">
+                  <span aria-hidden="true">⬇</span>
+                  {{ descargandoId === venta.idVenta ? 'DESCARGANDO...' : 'DESCARGAR BOLETA (PDF)' }}
+                </button>
+              }
+
+              <div class="purchase-total">
+                <span>{{ venta.estado === 'PAGADA' ? 'Total pagado' : 'Total (no cobrado)' }}</span>
+                <strong>S/ {{ venta.total | number:'1.2-2' }}</strong>
+              </div>
+            </div>
+
+            @if (errorDescarga?.idVenta === venta.idVenta) {
+              <p class="feedback error" role="alert">
+                <span aria-hidden="true">!</span> {{ errorDescarga?.mensaje }}
+              </p>
+            }
+          </article>
+        }
+      </div>
+
+      <!-- PAGINACIÓN -->
+      @if (totalPaginas > 1) {
+        <nav class="paginacion" aria-label="Páginas de compras">
+          <button type="button" class="page-button" [disabled]="paginaActual === 1"
+                  (click)="irAPagina(paginaActual - 1)">
+            <span aria-hidden="true">←</span> Anterior
+          </button>
+
+          <ul>
+            @for (pagina of paginas; track pagina) {
+              <li>
+                <button type="button" class="page-button numero"
+                        [class.actual]="pagina === paginaActual"
+                        [attr.aria-current]="pagina === paginaActual ? 'page' : null"
+                        [attr.aria-label]="'Página ' + pagina"
+                        (click)="irAPagina(pagina)">
+                  {{ pagina }}
+                </button>
+              </li>
+            }
+          </ul>
+
+          <button type="button" class="page-button" [disabled]="paginaActual === totalPaginas"
+                  (click)="irAPagina(paginaActual + 1)">
+            Siguiente <span aria-hidden="true">→</span>
+          </button>
+        </nav>
+      }
+    }
+  </main>
+</div>

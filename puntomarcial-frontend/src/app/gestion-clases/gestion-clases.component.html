@@ -1,0 +1,218 @@
+<div class="class-page">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-line" aria-hidden="true"></span>
+      <div>
+        <strong>PUNTO MARCIAL</strong>
+        <small>GESTIÓN DE CLASES</small>
+      </div>
+    </div>
+
+    <button class="back-button" type="button" (click)="volver()">
+      <span aria-hidden="true">←</span> PANEL PRINCIPAL
+    </button>
+  </header>
+
+  <main id="contenido" tabindex="-1" class="workspace">
+    <section class="intro">
+      <span class="eyebrow">OPERACIÓN / CLASES</span>
+      <h1>GESTIONA TUS <strong>CLASES.</strong></h1>
+      <p>Organiza los horarios, instructores y cupos disponibles.</p>
+    </section>
+
+    <form
+      #claseForm="ngForm"
+      class="class-form"
+      novalidate
+      (ngSubmit)="guardar()">
+
+      <div class="form-heading">
+        <span>01 / DATOS DE LA CLASE</span>
+        <h2>
+          {{ editandoId === null ? 'Registrar clase' : 'Actualizar clase' }}
+        </h2>
+      </div>
+
+      <div class="fields">
+        <div class="field">
+          <label for="campo-disciplina">DISCIPLINA</label>
+          <select
+            id="campo-disciplina"
+            name="disciplina"
+            [(ngModel)]="formulario.disciplina"
+            (ngModelChange)="cambiarDisciplina()"
+            required
+            aria-required="true">
+            <option value="" disabled>Elige una disciplina</option>
+            @for (disciplina of disciplinas; track disciplina.valor) {
+              <option [value]="disciplina.valor">{{ disciplina.etiqueta }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="campo-instructor">INSTRUCTOR</label>
+          <select
+            id="campo-instructor"
+            name="instructor"
+            [(ngModel)]="idInstructor"
+            [disabled]="!formulario.disciplina"
+            required
+            aria-required="true"
+            aria-describedby="ayuda-instructor">
+            <option [ngValue]="null" disabled>
+              {{ formulario.disciplina ? 'Elige un instructor' : 'Primero elige la disciplina' }}
+            </option>
+            @for (instructor of instructoresDeLaDisciplina; track instructor.idUsuario) {
+              <option [ngValue]="instructor.idUsuario">{{ nombreInstructor(instructor) }}</option>
+            }
+          </select>
+          <small id="ayuda-instructor" class="help">Solo aparecen los instructores de la disciplina elegida.</small>
+        </div>
+
+        <div class="field">
+          <label for="campo-sala">SALA</label>
+          <select
+            id="campo-sala"
+            name="sala"
+            [(ngModel)]="formulario.sala"
+            required
+            aria-required="true">
+            <option value="" disabled>Elige una sala</option>
+            @for (sala of salas; track sala) {
+              <option [value]="sala">Sala {{ sala }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="campo-inicio">FECHA Y HORA DE INICIO</label>
+          <input
+            id="campo-inicio"
+            name="inicio"
+            type="datetime-local"
+            [(ngModel)]="formulario.horarioInicio"
+            required
+            aria-required="true">
+        </div>
+
+        <div class="field">
+          <label for="campo-fin">FECHA Y HORA DE FIN</label>
+          <input
+            id="campo-fin"
+            name="fin"
+            type="datetime-local"
+            [(ngModel)]="formulario.horarioFin"
+            required
+            aria-required="true">
+        </div>
+
+        <div class="field">
+          <label for="campo-aforo">AFORO MÁXIMO</label>
+          <input
+            id="campo-aforo"
+            name="aforo"
+            type="number"
+            min="1"
+            max="30"
+            step="1"
+            [(ngModel)]="formulario.aforoMaximo"
+            required
+            aria-required="true"
+            aria-describedby="ayuda-aforo">
+          <small id="ayuda-aforo" class="help">Entre 1 y 30 alumnos.</small>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button
+          class="primary"
+          type="submit"
+          [disabled]="guardando">
+          {{
+            guardando
+              ? 'GUARDANDO...'
+              : editandoId === null
+                ? 'REGISTRAR CLASE'
+                : 'GUARDAR CAMBIOS'
+          }}
+        </button>
+
+        <button
+          class="secondary"
+          type="button"
+          *ngIf="editandoId !== null"
+          (click)="cancelar()">
+          CANCELAR EDICIÓN
+        </button>
+      </div>
+    </form>
+
+    <p class="feedback success" role="status" *ngIf="mensaje">
+      {{ mensaje }}
+    </p>
+
+    <p class="feedback error" role="alert" *ngIf="error">
+      {{ error }}
+    </p>
+
+    <section class="class-list">
+      <div class="list-heading">
+        <span>02 / PROGRAMACIÓN</span>
+        <h2>CLASES REGISTRADAS</h2>
+      </div>
+
+      <p class="empty" *ngIf="cargando">Cargando clases...</p>
+
+      <div class="cards" *ngIf="!cargando && clases.length">
+        <article *ngFor="let clase of clases">
+          <span class="tag">SALA {{ clase.sala }}</span>
+          <h3>{{ etiquetaDisciplina(clase.disciplina) }}</h3>
+          <p>{{ nombreInstructor(clase.instructor) }}</p>
+          <p>
+            {{ clase.horarioInicio | date:'dd/MM/yyyy HH:mm' }}
+            –
+            {{ clase.horarioFin | date:'HH:mm' }}
+          </p>
+
+          <div class="card-footer">
+            <span>
+              CUPOS {{ clase.aforoDisponible }} / {{ clase.aforoMaximo }}
+            </span>
+            <div class="card-actions">
+              <button
+                type="button"
+                [attr.aria-label]="'Editar la clase de ' + etiquetaDisciplina(clase.disciplina) + ' del ' + (clase.horarioInicio | date:'dd/MM/yyyy HH:mm')"
+                (click)="editar(clase)">
+                EDITAR
+              </button>
+
+              <button
+                type="button"
+                class="delete"
+                [disabled]="!!clase.totalReservas || eliminandoId === clase.idClase"
+                [attr.aria-describedby]="clase.totalReservas ? 'nota-' + clase.idClase : null"
+                [attr.aria-label]="'Eliminar la clase de ' + etiquetaDisciplina(clase.disciplina) + ' del ' + (clase.horarioInicio | date:'dd/MM/yyyy HH:mm')"
+                (click)="eliminar(clase)">
+                {{ eliminandoId === clase.idClase ? 'ELIMINANDO...' : 'ELIMINAR' }}
+              </button>
+            </div>
+          </div>
+
+          @if (clase.totalReservas) {
+            <p class="nota-reservas" [id]="'nota-' + clase.idClase">
+              <span aria-hidden="true">🔒</span>
+              Tiene {{ clase.totalReservas }} reserva(s): no se puede eliminar.
+            </p>
+          }
+        </article>
+      </div>
+
+      <p
+        class="empty"
+        *ngIf="!cargando && !clases.length && !error">
+        Aún no hay clases registradas.
+      </p>
+    </section>
+  </main>
+</div>

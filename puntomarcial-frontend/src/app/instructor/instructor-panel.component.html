@@ -1,0 +1,63 @@
+<div class="instructor-page">
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="/images/logo_puntomarcial.jpg" alt="Punto Marcial" class="brand-logo">
+      <div class="brand-text">
+        <strong>PUNTO MARCIAL</strong>
+        <span>ÁREA DEL INSTRUCTOR</span>
+      </div>
+    </div>
+
+    <button type="button" class="logout-button" (click)="cerrarSesion()">
+      CERRAR SESIÓN
+    </button>
+  </header>
+
+  <main id="contenido" tabindex="-1" class="workspace">
+
+    <section class="intro">
+      <span class="eyebrow">INSTRUCTOR</span>
+      <h1>HOLA, <strong>{{ nombre | uppercase }}.</strong></h1>
+      <p>
+        @if (cargando) {
+          Consultando tus clases...
+        } @else {
+          Tienes {{ proximas.length }} clase(s) próxima(s) asignada(s).
+        }
+      </p>
+    </section>
+
+    @if (claseEnCurso) {
+      <div class="feedback aviso" role="status">
+        <span aria-hidden="true">⏱</span>
+        Tu clase de {{ etiquetaDisciplina(claseEnCurso.clase.disciplina) }} (sala {{ claseEnCurso.clase.sala }})
+        está en curso y tiene {{ claseEnCurso.pendientes }} asistencia(s) pendiente(s).
+        <button type="button" class="primary" (click)="tomarAsistencia()">TOMAR ASISTENCIA</button>
+      </div>
+    }
+
+    <section class="modules" aria-label="Opciones del instructor">
+
+      <button type="button" class="module" (click)="ir('/instructor/clases')">
+        <span class="category">CLASES</span>
+        <h2>Mis clases</h2>
+        <p>Próximas clases asignadas, alumnos inscritos y asistencia.</p>
+      </button>
+
+      <button type="button" class="module" (click)="ir('/instructor/historial')">
+        <span class="category">HISTORIAL</span>
+        <h2>Clases pasadas</h2>
+        <p>Clases que ya dictaste y cuántos alumnos asistieron.</p>
+      </button>
+
+      <button type="button" class="module" (click)="ir('/instructor/perfil')">
+        <span class="category">CUENTA</span>
+        <h2>Mi perfil</h2>
+        <p>Consulta tus datos y actualiza tu correo y teléfono.</p>
+      </button>
+
+    </section>
+
+  </main>
+</div>

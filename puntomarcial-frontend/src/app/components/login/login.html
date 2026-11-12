@@ -1,0 +1,208 @@
+<div class="login-page">
+
+  <main id="contenido" tabindex="-1" class="login-shell">
+
+    <section class="brand-panel">
+
+      <div class="brand-top">
+
+        <div class="pm-logo">
+          <img
+            src="/images/logo_puntomarcial.jpg"
+            alt="Logo Punto Marcial">
+        </div>
+
+        <div class="brand-name">
+          <strong>PUNTO MARCIAL</strong>
+          <span>ACADEMIA DE ARTES MARCIALES</span>
+        </div>
+
+      </div>
+
+
+      <div class="brand-main">
+
+
+        <div class="brand-slogan">
+          DISCIPLINA<br>
+          DENTRO Y<br>
+          <strong>FUERA DEL RING.</strong>
+        </div>
+
+        <div class="red-line" aria-hidden="true"></div>
+
+        <p>
+          Accede a la plataforma de Punto Marcial para
+          gestionar tus actividades dentro de la academia.
+        </p>
+
+      </div>
+
+
+      <div class="brand-bottom" aria-hidden="true"></div>
+
+    </section>
+
+
+    <!-- LOGIN -->
+    <section class="access-panel">
+
+      <div class="access-container">
+
+        <header class="access-header">
+
+
+          <h1>Iniciar sesión</h1>
+
+          <p>
+            Ingresa tus credenciales para continuar.
+          </p>
+
+        </header>
+
+
+        <form
+          (ngSubmit)="onSubmit()"
+          #loginForm="ngForm">
+
+          <!-- CORREO -->
+          <div class="form-group">
+
+            <label for="correo">
+              Correo electrónico
+            </label>
+
+            <div class="input-wrapper">
+
+              <span class="input-icon" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true">
+
+                  <path
+                    d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1
+                    0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                  </path>
+
+                  <polyline
+                    points="22,6 12,13 2,6">
+                  </polyline>
+
+                </svg>
+              </span>
+
+              <input
+                id="correo"
+                type="email"
+                name="correo"
+                [(ngModel)]="correo"
+                placeholder="correo@ejemplo.com"
+                autocomplete="email"
+                required
+                aria-required="true">
+
+            </div>
+
+          </div>
+
+
+          <!-- CONTRASEÑA -->
+          <div class="form-group">
+
+            <label for="password">
+              Contraseña
+            </label>
+
+            <div class="input-wrapper">
+
+              <span class="input-icon" aria-hidden="true">
+
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true">
+
+                  <rect
+                    x="3"
+                    y="11"
+                    width="18"
+                    height="10"
+                    rx="2">
+                  </rect>
+
+                  <path
+                    d="M7 11V7a5 5 0 0 1 10 0v4">
+                  </path>
+
+                </svg>
+
+              </span>
+
+              <input
+                id="password"
+                type="password"
+                name="password"
+                [(ngModel)]="password"
+                placeholder="Ingresa tu contraseña"
+                autocomplete="current-password"
+                required
+                aria-required="true">
+
+            </div>
+
+          </div>
+
+
+          <!-- MENSAJES DEL BACKEND -->
+          @if (mensaje) {
+
+            <div
+              class="message"
+              [class.message-error]="error"
+              [class.message-success]="!error"
+              [attr.role]="error ? 'alert' : 'status'">
+
+              <span class="message-symbol" aria-hidden="true">
+                {{ error ? '!' : '✓' }}
+              </span>
+
+              <span>{{ mensaje }}</span>
+
+            </div>
+
+          }
+
+
+          <!-- BOTÓN -->
+          <button
+            type="submit"
+            class="login-button"
+            [disabled]="loginForm.invalid || cargando">
+
+            <span>
+              {{ cargando ? 'INGRESANDO...' : 'INGRESAR' }}
+            </span>
+
+            <strong aria-hidden="true">→</strong>
+
+          </button>
+
+        </form>
+
+
+        <footer class="access-footer">
+
+          <span class="status-dot" aria-hidden="true"></span>
+
+          <span>
+           Punto Marcial
+          </span>
+
+        </footer>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>

@@ -1,0 +1,98 @@
+<div class="operation-page">
+  <header>
+    <div class="brand">
+      <span aria-hidden="true"></span>
+      <div>
+        <strong>PUNTO MARCIAL</strong>
+        <small>CAPACIDAD</small>
+      </div>
+    </div>
+    <button type="button" (click)="volver()"><span aria-hidden="true">←</span> VOLVER AL PANEL</button>
+  </header>
+
+  <main id="contenido" tabindex="-1">
+    <section class="hero">
+      <span>CAPACIDAD / 05</span>
+      <h1>SUPERVISAR <em>AFORO.</em></h1>
+      <p>Consulta la ocupación y los cupos de cada clase.</p>
+    </section>
+
+    <div class="toolbar">
+      <h2 id="titulo-aforo" tabindex="-1">CLASES PROGRAMADAS</h2>
+      <button type="button" (click)="actualizar()">
+        ACTUALIZAR <span aria-hidden="true">↻</span>
+      </button>
+    </div>
+
+    <p class="notice" role="status" *ngIf="cargando">Consultando clases...</p>
+    <p class="notice error" role="alert" *ngIf="error">{{ error }}</p>
+
+    <p
+      class="notice"
+      *ngIf="!cargando && !error && !clases.length">
+      Aún no hay clases registradas.
+    </p>
+
+    <div class="cards" *ngIf="!cargando && clases.length">
+      <article *ngFor="let clase of clasesDePagina">
+        <div class="card-head">
+          <span>{{ clase.sala }}</span>
+          <strong>
+            <span aria-hidden="true">{{ clase.aforoDisponible > 0 ? '✓' : '✕' }}</span>
+            {{ clase.aforoDisponible > 0
+              ? 'DISPONIBLE'
+              : 'COMPLETA' }}
+          </strong>
+        </div>
+
+        <h3>{{ etiquetaDisciplina(clase.disciplina) }}</h3>
+
+        <p>
+          {{ nombreInstructor(clase.instructor) }} ·
+          {{ clase.horarioInicio | date:'dd/MM/yyyy HH:mm' }}
+        </p>
+
+        <div class="numbers">
+          <div>
+            <strong>{{ ocupados(clase) }}</strong>
+            <small>RESERVADOS</small>
+          </div>
+
+          <div>
+            <strong>{{ clase.aforoDisponible }}</strong>
+            <small>DISPONIBLES</small>
+          </div>
+
+          <div>
+            <strong>{{ clase.aforoMaximo }}</strong>
+            <small>AFORO TOTAL</small>
+          </div>
+        </div>
+
+        <div
+          class="progress"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="porcentaje(clase)"
+          [attr.aria-label]="'Ocupación de ' + etiquetaDisciplina(clase.disciplina)">
+          <div [style.width.%]="porcentaje(clase)"></div>
+        </div>
+
+        <p>{{ porcentaje(clase) }}% de ocupación</p>
+      </article>
+    </div>
+
+    @if (!cargando && clases.length) {
+      <app-paginacion
+        [total]="clases.length"
+        [porPagina]="porPagina"
+        [pagina]="pagina"
+        (paginaChange)="pagina = $event"
+        etiqueta="Páginas de clases"
+        nombreElementos="clase(s)"
+        idFoco="titulo-aforo">
+      </app-paginacion>
+    }
+  </main>
+</div>

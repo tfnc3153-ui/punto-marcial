@@ -1,0 +1,78 @@
+<div class="instructor-page">
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="/images/logo_puntomarcial.jpg" alt="Punto Marcial" class="brand-logo">
+      <div class="brand-text">
+        <strong>PUNTO MARCIAL</strong>
+        <span>ÁREA DEL INSTRUCTOR</span>
+      </div>
+    </div>
+
+    <button type="button" class="back-button" (click)="volver()">
+      <span aria-hidden="true">←</span> PANEL DEL INSTRUCTOR
+    </button>
+  </header>
+
+  <main id="contenido" tabindex="-1" class="workspace">
+
+    <section class="intro">
+      <span class="eyebrow">{{ pasadas ? 'INSTRUCTOR / HISTORIAL' : 'INSTRUCTOR / CLASES' }}</span>
+      @if (pasadas) {
+        <h1>CLASES <strong>DICTADAS.</strong></h1>
+        <p>Tus clases pasadas y cuántos alumnos asistieron a cada una.</p>
+      } @else {
+        <h1>MIS <strong>CLASES.</strong></h1>
+        <p>Tus próximas clases asignadas. Solo puedes consultarlas: las crea el administrador.</p>
+      }
+    </section>
+
+    <p class="empty" role="status" *ngIf="cargando">Consultando clases...</p>
+    <p class="feedback error" role="alert" *ngIf="error"><span aria-hidden="true">!</span> {{ error }}</p>
+
+    @if (!cargando && !error && !clases.length) {
+      <p class="empty">{{ pasadas ? 'Todavía no tienes clases dictadas.' : 'No tienes clases próximas asignadas.' }}</p>
+    }
+
+    @if (pasadas && clases.length) {
+      <p class="help">{{ clases.length }} clase(s) dictada(s) · {{ totalAsistentes }} asistencia(s) en total.</p>
+    }
+
+    <ul class="class-list" role="list">
+      @for (item of clases; track item.clase.idClase) {
+        <li class="class-card" [class.en-curso]="enCurso(item.clase)">
+          <div>
+            <h2>{{ etiquetaDisciplina(item.clase.disciplina) }} · Sala {{ item.clase.sala }}</h2>
+            <p>
+              {{ item.clase.horarioInicio | date:'dd/MM/yyyy' }} ·
+              {{ item.clase.horarioInicio | date:'HH:mm' }} – {{ item.clase.horarioFin | date:'HH:mm' }}
+            </p>
+
+            <div class="badges">
+              @if (enCurso(item.clase)) {
+                <span class="badge curso"><span aria-hidden="true">⏱</span> En curso</span>
+              }
+              <span class="badge neutro">{{ item.inscritos }} / {{ item.clase.aforoMaximo }} inscritos</span>
+              @if (pasadas || item.puedeTomarAsistencia) {
+                <span class="badge asistio"><span aria-hidden="true">✓</span> {{ item.asistentes }} asistieron</span>
+                @if (item.pendientes) {
+                  <span class="badge pendiente"><span aria-hidden="true">…</span> {{ item.pendientes }} sin marcar</span>
+                }
+              }
+            </div>
+          </div>
+
+          <button
+            type="button"
+            [class.primary]="item.puedeTomarAsistencia && item.pendientes > 0"
+            [class.secondary]="!(item.puedeTomarAsistencia && item.pendientes > 0)"
+            [attr.aria-label]="(item.puedeTomarAsistencia ? 'Tomar asistencia de ' : 'Ver alumnos de ') + etiquetaDisciplina(item.clase.disciplina) + ' del ' + (item.clase.horarioInicio | date:'dd/MM/yyyy HH:mm')"
+            (click)="verClase(item)">
+            {{ item.puedeTomarAsistencia && item.pendientes > 0 ? 'TOMAR ASISTENCIA' : 'VER ALUMNOS' }}
+          </button>
+        </li>
+      }
+    </ul>
+
+  </main>
+</div>

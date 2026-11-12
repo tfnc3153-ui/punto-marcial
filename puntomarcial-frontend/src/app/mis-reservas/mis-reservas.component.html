@@ -1,0 +1,103 @@
+<div class="operation-page">
+  <header>
+    <div class="brand">
+      <span aria-hidden="true"></span>
+      <div>
+        <strong>PUNTO MARCIAL</strong>
+        <small>ÁREA DEL CLIENTE</small>
+      </div>
+    </div>
+    <button type="button" (click)="volver()"><span aria-hidden="true">←</span> VOLVER AL MENÚ</button>
+  </header>
+
+  <main id="contenido" tabindex="-1">
+    <section class="hero">
+      <span>ACTIVIDAD / 03</span>
+      <h1>MIS <em>RESERVAS.</em></h1>
+      <p>Consulta las clases que has reservado.</p>
+    </section>
+
+    <div class="toolbar">
+      <h2 id="titulo-reservas" tabindex="-1">HISTORIAL DE RESERVAS</h2>
+      <span>{{ reservas.length }} REGISTRO(S)</span>
+    </div>
+
+    <p class="notice" role="status" *ngIf="cargando">Consultando reservas...</p>
+    <p class="notice error" role="alert" *ngIf="error">{{ error }}</p>
+    <p class="notice success" role="status" *ngIf="mensaje">{{ mensaje }}</p>
+
+    <p
+      class="notice"
+      *ngIf="!cargando && !error && !reservas.length">
+      Todavía no tienes reservas.
+    </p>
+
+    <div class="cards" *ngIf="!cargando && reservas.length">
+      <article *ngFor="let reserva of reservasDePagina">
+        <div class="card-head">
+          <span>RESERVA #{{ reserva.idReserva }}</span>
+          @if (yaEmpezo(reserva)) {
+            <strong>
+              <span aria-hidden="true">{{ reserva.asistencia === 'ASISTIO' ? '✓' : reserva.asistencia === 'NO_ASISTIO' ? '✕' : '…' }}</span>
+              {{ textoAsistencia(reserva) }}
+            </strong>
+          } @else {
+            <strong>
+              <span aria-hidden="true">✓</span>
+              PRÓXIMA
+            </strong>
+          }
+        </div>
+
+        <h3>{{ etiquetaDisciplina(reserva.clase.disciplina) }}</h3>
+        <p>
+          {{ nombreInstructor(reserva.clase.instructor) }} ·
+          Sala {{ reserva.clase.sala }}
+        </p>
+
+        <div class="numbers">
+          <div>
+            <strong>
+              {{ reserva.clase.horarioInicio | date:'dd/MM/yyyy' }}
+            </strong>
+            <small>FECHA DE CLASE</small>
+          </div>
+
+          <div>
+            <strong>
+              {{ reserva.clase.horarioInicio | date:'HH:mm' }}
+            </strong>
+            <small>HORA</small>
+          </div>
+        </div>
+
+        <p>
+          Registrada el
+          {{ reserva.fechaReserva | date:'dd/MM/yyyy' }}
+        </p>
+
+        <button
+          type="button"
+          class="cancel-button"
+          *ngIf="reserva.estado === 'ACTIVA' && !yaEmpezo(reserva)"
+          [disabled]="cancelandoId === reserva.idReserva"
+          [attr.aria-label]="'Cancelar la reserva ' + reserva.idReserva + ' de ' + etiquetaDisciplina(reserva.clase.disciplina)"
+          (click)="cancelar(reserva)">
+          {{ cancelandoId === reserva.idReserva ? 'CANCELANDO...' : 'CANCELAR RESERVA' }}
+        </button>
+      </article>
+    </div>
+
+    @if (!cargando && reservas.length) {
+      <app-paginacion
+        [total]="reservas.length"
+        [porPagina]="porPagina"
+        [pagina]="pagina"
+        (paginaChange)="pagina = $event"
+        etiqueta="Páginas de reservas"
+        nombreElementos="reserva(s)"
+        idFoco="titulo-reservas">
+      </app-paginacion>
+    }
+  </main>
+</div>

@@ -1,0 +1,415 @@
+<div class="client-workspace">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-line" aria-hidden="true"></span>
+
+      <div>
+        <strong>PUNTO MARCIAL</strong>
+        <small>GESTIÓN DE USUARIOS</small>
+      </div>
+    </div>
+
+    <button type="button" class="back-button" (click)="volver()">
+      <span aria-hidden="true">←</span>
+      Panel principal
+    </button>
+  </header>
+
+
+  <main id="contenido" tabindex="-1" class="content">
+
+    <section class="page-heading">
+      <div>
+        <span class="section-code">USUARIOS / 02</span>
+        <h1>Actualizar<br><strong>usuario</strong></h1>
+      </div>
+
+      <p>
+        Localiza un usuario, actualiza sus datos o
+        desactívalo para que ya no pueda iniciar sesión.
+      </p>
+    </section>
+
+
+    <section class="management-layout">
+
+      <!-- DIRECTORIO -->
+      <aside class="client-directory">
+
+        <div class="directory-header">
+          <div>
+            <span class="label">DIRECTORIO</span>
+            <h2>Usuarios</h2>
+          </div>
+
+          <span class="client-count" aria-label="Usuarios mostrados">
+            {{ usuariosFiltrados.length }}
+          </span>
+        </div>
+
+
+        <div class="search-box">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+
+          <label for="campo-busqueda" class="sr-only">Buscar usuario</label>
+
+          <input
+            id="campo-busqueda"
+            type="search"
+            name="busqueda"
+            [(ngModel)]="busqueda"
+            placeholder="Nombre, documento o correo">
+        </div>
+
+        <div class="directory-filters">
+          <div class="filter">
+            <label for="filtro-rol">Rol</label>
+            <select id="filtro-rol" name="filtroRol" [(ngModel)]="filtroRol">
+              <option value="">Todos</option>
+              @for (rol of roles; track rol.valor) {
+                <option [value]="rol.valor">{{ rol.etiqueta }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="filter">
+            <label for="filtro-estado">Estado</label>
+            <select id="filtro-estado" name="filtroEstado" [(ngModel)]="filtroEstado">
+              <option value="">Todos</option>
+              <option value="ACTIVO">Activos</option>
+              <option value="INACTIVO">Inactivos</option>
+            </select>
+          </div>
+        </div>
+
+
+        <div *ngIf="cargando" class="state-message" role="status">
+          Cargando usuarios...
+        </div>
+
+
+        <div
+          *ngIf="!cargando && usuariosFiltrados.length === 0"
+          class="state-message"
+          role="status">
+
+          No encontramos usuarios con esa búsqueda.
+
+        </div>
+
+
+        <div
+          *ngIf="!cargando"
+          class="client-list">
+
+          @for (usuario of usuariosFiltrados; track usuario.idUsuario) {
+            <button
+              type="button"
+              class="client-item"
+              [class.active]="usuarioSeleccionado?.idUsuario === usuario.idUsuario"
+              [class.inactivo]="usuario.estado === 'INACTIVO'"
+              [attr.aria-pressed]="usuarioSeleccionado?.idUsuario === usuario.idUsuario"
+              (click)="seleccionarUsuario(usuario)">
+
+              <div class="avatar" aria-hidden="true">
+                {{ usuario.nombre.charAt(0) }}{{ usuario.apellido.charAt(0) }}
+              </div>
+
+              <div class="client-summary">
+                <strong>
+                  {{ usuario.nombre }} {{ usuario.apellido }}
+                </strong>
+
+                <span>
+                  <span class="role-badge" [attr.data-rol]="usuario.rol">{{ etiquetaRol(usuario.rol) }}</span>
+                  @if (usuario.estado === 'INACTIVO') {
+                    <span class="state-badge"><span aria-hidden="true">✕</span> Inactivo</span>
+                  }
+                  · {{ usuario.numDoc }}
+                </span>
+              </div>
+
+              <span class="select-arrow" aria-hidden="true">→</span>
+
+            </button>
+          }
+
+        </div>
+
+      </aside>
+
+
+      <!-- PANEL DERECHO -->
+      <section class="client-editor">
+
+        <!-- SIN USUARIO SELECCIONADO -->
+        <div
+          *ngIf="!usuarioSeleccionado"
+          class="empty-editor">
+
+          <span class="empty-number" aria-hidden="true">02</span>
+
+          <div>
+            <h2>Selecciona un usuario</h2>
+
+            <p>
+              Elige un registro del directorio para consultar
+              y modificar su información.
+            </p>
+          </div>
+
+        </div>
+
+
+        <!-- USUARIO SELECCIONADO -->
+        <div
+          *ngIf="usuarioSeleccionado as u"
+          class="editor-content">
+
+          <div class="profile-header">
+
+            <div class="profile-avatar" aria-hidden="true">
+              {{ u.nombre.charAt(0) }}{{ u.apellido.charAt(0) }}
+            </div>
+
+            <div>
+              <span>{{ etiquetaRol(u.rol).toUpperCase() }} #{{ u.idUsuario }}</span>
+
+              <h2>
+                {{ u.nombre }}
+                {{ u.apellido }}
+              </h2>
+
+              <p>
+                {{ u.tipoDoc }}
+                {{ u.numDoc }} ·
+                @if (u.estado === 'INACTIVO') {
+                  <strong class="estado inactivo"><span aria-hidden="true">✕</span> Inactivo</strong>
+                } @else {
+                  <strong class="estado activo"><span aria-hidden="true">✓</span> Activo</strong>
+                }
+              </p>
+            </div>
+
+          </div>
+
+
+          <div class="form-section">
+
+            <div class="section-title">
+              <span aria-hidden="true">01</span>
+
+              <div>
+                <h3>Información personal</h3>
+                <p>Datos principales del usuario.</p>
+              </div>
+            </div>
+
+
+            <div class="form-grid">
+
+              <div class="field">
+                <label for="editar-nombre">Nombre</label>
+
+                <input
+                  id="editar-nombre"
+                  type="text"
+                  name="nombre"
+                  [(ngModel)]="u.nombre">
+              </div>
+
+
+              <div class="field">
+                <label for="editar-apellido">Apellido</label>
+
+                <input
+                  id="editar-apellido"
+                  type="text"
+                  name="apellido"
+                  [(ngModel)]="u.apellido">
+              </div>
+
+
+              <div class="field">
+                <label for="editar-tipodoc">Tipo de documento</label>
+
+                <input
+                  id="editar-tipodoc"
+                  type="text"
+                  [value]="u.tipoDoc"
+                  disabled>
+              </div>
+
+
+              <div class="field">
+                <label for="editar-numdoc">Número de documento</label>
+
+                <input
+                  id="editar-numdoc"
+                  type="text"
+                  [value]="u.numDoc"
+                  disabled>
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="form-section">
+
+            <div class="section-title">
+              <span aria-hidden="true">02</span>
+
+              <div>
+                <h3>Contacto</h3>
+                <p>Canales de comunicación del usuario.</p>
+              </div>
+            </div>
+
+
+            <div class="form-grid">
+
+              <div class="field">
+                <label for="editar-correo">Correo electrónico</label>
+
+                <input
+                  id="editar-correo"
+                  type="email"
+                  name="correo"
+                  autocomplete="off"
+                  [(ngModel)]="u.correo">
+              </div>
+
+
+              <div class="field">
+                <label for="editar-telefono">Teléfono</label>
+
+                <input
+                  id="editar-telefono"
+                  type="tel"
+                  name="telefono"
+                  inputmode="numeric"
+                  maxlength="9"
+                  autocomplete="off"
+                  [(ngModel)]="u.telefono">
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="form-section">
+
+            <div class="section-title">
+              <span aria-hidden="true">03</span>
+
+              <div>
+                <h3>Datos del rol</h3>
+                <p>{{ etiquetaRol(u.rol) }}</p>
+              </div>
+            </div>
+
+
+            <div class="form-grid">
+
+              @switch (u.rol) {
+
+                @case ('CLIENTE') {
+                  <div class="field">
+                    <label for="editar-membresia">Estado de membresía</label>
+                    <select id="editar-membresia" name="estadoMembresia" [(ngModel)]="u.estadoMembresia">
+                      <option value="VIGENTE">Vigente</option>
+                      <option value="VENCIDA">Vencida</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label for="editar-vencimiento">Fecha de vencimiento</label>
+                    <input id="editar-vencimiento" type="date" name="fechaVencimiento" [(ngModel)]="u.fechaVencimiento">
+                  </div>
+                }
+
+                @case ('INSTRUCTOR') {
+                  <div class="field">
+                    <label for="editar-disciplina">Disciplina</label>
+                    <select id="editar-disciplina" name="disciplina" [(ngModel)]="u.disciplina"
+                            aria-describedby="ayuda-disciplina">
+                      @for (disciplina of disciplinas; track disciplina.valor) {
+                        <option [value]="disciplina.valor">{{ disciplina.etiqueta }}</option>
+                      }
+                    </select>
+                    <small id="ayuda-disciplina" class="field-help">
+                      Solo se puede cambiar si no tiene clases futuras asignadas.
+                    </small>
+                  </div>
+                }
+
+                @default {
+                  <div class="field">
+                    <label for="editar-codigo">Código de empleado</label>
+                    <input id="editar-codigo" type="text" name="codigoEmpleado" maxlength="20" [(ngModel)]="u.codigoEmpleado">
+                  </div>
+                }
+
+              }
+
+            </div>
+
+          </div>
+
+
+          <div
+            *ngIf="mensaje"
+            class="feedback success"
+            role="status"
+            aria-live="polite">
+            <span aria-hidden="true">✓</span>
+            {{ mensaje }}
+          </div>
+
+          <div
+            *ngIf="error"
+            class="feedback error"
+            role="alert">
+            <span aria-hidden="true">!</span>
+            {{ error }}
+          </div>
+
+
+          <div class="editor-actions">
+
+            <button
+              type="button"
+              class="state-button"
+              [class.activar]="u.estado === 'INACTIVO'"
+              [disabled]="cambiandoEstado"
+              (click)="cambiarEstado()">
+              {{ cambiandoEstado ? 'PROCESANDO...' : u.estado === 'INACTIVO' ? 'ACTIVAR USUARIO' : 'DESACTIVAR USUARIO' }}
+            </button>
+
+            <button
+              type="button"
+              class="save-button"
+              [disabled]="guardando"
+              (click)="actualizarUsuario()">
+
+              {{ guardando ? 'GUARDANDO...' : 'GUARDAR CAMBIOS' }}
+
+              <span aria-hidden="true">→</span>
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </section>
+
+  </main>
+
+</div>
