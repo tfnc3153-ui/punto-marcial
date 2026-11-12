@@ -14,6 +14,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.academia.puntomarcial.bdd.comun.ApiPrueba;
 import com.academia.puntomarcial.bdd.comun.ApiPrueba.ClientePrueba;
+import com.academia.puntomarcial.bdd.comun.Login;
 import com.academia.puntomarcial.bdd.comun.Navegador;
 
 import io.cucumber.java.After;
@@ -57,19 +58,7 @@ public class Sprint5Steps {
         //Preparar datos: cliente nuevo para no llenar las compras de los clientes de ejemplo
         ClientePrueba cliente = ApiPrueba.crearCliente();
 
-        driver.get(Navegador.URL + "/login");
-        Thread.sleep(2000);
-
-        //Caja de texto del correo y la contraseña
-        driver.findElement(By.id("correo")).sendKeys(cliente.correo());
-        Thread.sleep(2000);
-        driver.findElement(By.id("password")).sendKeys(cliente.clave());
-        Thread.sleep(2000);
-
-        //Botón INGRESAR
-        driver.findElement(By.cssSelector("button.login-button")).click();
-        wait.until(ExpectedConditions.urlContains("/menu"));
-        Thread.sleep(2000);
+        Login.iniciarSesion(driver, wait, cliente.correo(), cliente.clave());
     }
 
     @Given("agregué {int} unidad de {string} al carrito")

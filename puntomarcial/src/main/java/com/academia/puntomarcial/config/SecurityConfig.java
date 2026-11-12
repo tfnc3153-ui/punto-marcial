@@ -66,8 +66,6 @@ public class SecurityConfig {
                 .requestMatchers("/error").permitAll()
                 .requestMatchers(
                     "/auth/**",
-                    "/clientes",
-                    "/clientes/**",
                     "/clases",
                     "/clases/**",
                     "/reservas",
