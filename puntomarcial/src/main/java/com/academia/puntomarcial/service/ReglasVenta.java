@@ -13,6 +13,13 @@ import java.util.List;
  */
 public final class ReglasVenta {
 
+    /** Estado de un producto que se puede vender. */
+    public static final String PRODUCTO_ACTIVO = "ACTIVO";
+
+    /** Estados de una venta. */
+    public static final String ESTADO_PAGADA = "PAGADA";
+    public static final String ESTADO_RECHAZADA = "RECHAZADA";
+
     public static final List<String> CATEGORIAS =
             List.of("ROPA", "PROTECCION", "EQUIPAMIENTO", "ACCESORIOS", "SUPLEMENTOS");
 

@@ -3,6 +3,7 @@ package com.academia.puntomarcial.dto;
 import java.util.List;
 
 import com.academia.puntomarcial.model.Venta;
+import com.academia.puntomarcial.service.ReglasVenta;
 
 /**
  * Resultado de la compra: la venta (PAGADA o RECHAZADA), un mensaje para el cliente
@@ -33,6 +34,6 @@ public class VentaResponse {
     }
 
     public boolean isPagada() {
-        return venta != null && "PAGADA".equals(venta.getEstado());
+        return venta != null && ReglasVenta.ESTADO_PAGADA.equals(venta.getEstado());
     }
 }

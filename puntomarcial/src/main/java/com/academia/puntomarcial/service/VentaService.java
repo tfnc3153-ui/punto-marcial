@@ -28,6 +28,8 @@ import com.academia.puntomarcial.repository.VentaRepository;
 @Service
 public class VentaService {
 
+    private static final String PRODUCTO_NO_EXISTE = "Uno de los productos ya no existe.";
+
     private final ProductoRepository productoRepository;
     private final VentaRepository ventaRepository;
     private final ClienteRepository clienteRepository;
@@ -54,20 +56,15 @@ public class VentaService {
 
         for (Map.Entry<Integer, Integer> entrada : cantidades.entrySet()) {
             Producto producto = productoRepository.findById(entrada.getKey())
-                    .orElseThrow(() -> new IllegalArgumentException("Uno de los productos ya no existe."));
-
-            if (!"ACTIVO".equals(producto.getEstado())) {
-                throw new IllegalArgumentException(
-                        "El producto " + producto.getNombre() + " ya no está a la venta.");
-            }
+                    .orElseThrow(() -> new IllegalArgumentException(PRODUCTO_NO_EXISTE));
+            validarALaVenta(producto);
 
             int cantidad = entrada.getValue();
             BigDecimal subtotal = ReglasVenta.calcularSubtotal(producto.getPrecio(), cantidad);
             boolean suficiente = ReglasVenta.stockSuficiente(producto.getStock(), cantidad);
 
             if (!suficiente) {
-                productosSinStock.add(producto.getNombre() + " (talla " + producto.getTalla()
-                        + "): pediste " + cantidad + ", hay " + producto.getStock());
+                productosSinStock.add(describirFaltaDeStock(producto, cantidad));
             }
 
             subtotales.add(subtotal);
@@ -88,12 +85,7 @@ public class VentaService {
      */
     @Transactional
     public VentaResponse registrarVenta(VentaRequest request) {
-        if (request == null || request.getIdCliente() == null) {
-            throw new IllegalArgumentException("Debe indicar el cliente.");
-        }
-        if (request.getPago() == null) {
-            throw new IllegalArgumentException("Debe ingresar los datos de pago.");
-        }
+        validarSolicitud(request);
 
         Cliente cliente = clienteRepository.findById(request.getIdCliente())
                 .orElseThrow(() -> new IllegalArgumentException("El cliente no existe."));
@@ -103,48 +95,7 @@ public class VentaService {
         Venta venta = new Venta();
         venta.setCliente(cliente);
         venta.setFecha(LocalDateTime.now());
-
-        List<BigDecimal> subtotales = new ArrayList<>();
-        List<String> productosSinStock = new ArrayList<>();
-
-        // Se bloquean en orden de id para que dos compras simultáneas no se esperen en cruz
-        List<Integer> ids = new ArrayList<>(cantidades.keySet());
-        ids.sort(null);
-
-        for (Integer idProducto : ids) {
-            Producto producto = productoRepository.buscarParaVenta(idProducto)
-                    .orElseThrow(() -> new IllegalArgumentException("Uno de los productos ya no existe."));
-
-            if (!"ACTIVO".equals(producto.getEstado())) {
-                throw new IllegalArgumentException(
-                        "El producto " + producto.getNombre() + " ya no está a la venta.");
-            }
-
-            int cantidad = cantidades.get(idProducto);
-
-            if (!ReglasVenta.stockSuficiente(producto.getStock(), cantidad)) {
-                productosSinStock.add(producto.getNombre() + " (talla " + producto.getTalla()
-                        + "): pediste " + cantidad + ", hay " + producto.getStock());
-                continue;
-            }
-
-            DetalleVenta detalle = new DetalleVenta();
-            detalle.setProducto(producto);
-            detalle.setCantidad(cantidad);
-            detalle.setPrecioUnitario(producto.getPrecio());
-            detalle.setSubtotal(ReglasVenta.calcularSubtotal(producto.getPrecio(), cantidad));
-
-            venta.agregarDetalle(detalle);
-            subtotales.add(detalle.getSubtotal());
-        }
-
-        // Sin stock suficiente no se registra nada (la transacción se revierte)
-        if (!productosSinStock.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "No hay stock suficiente para: " + String.join("; ", productosSinStock));
-        }
-
-        venta.setTotal(ReglasVenta.calcularTotal(subtotales));
+        agregarDetalles(venta, cantidades);
 
         DatosPagoRequest pago = request.getPago();
         String numeroTarjeta = soloDigitos(pago.getNumeroTarjeta());
@@ -152,28 +103,16 @@ public class VentaService {
         String cvv = pago.getCvv() == null ? null : pago.getCvv().trim();
 
         if (!ReglasVenta.pagoValido(numeroTarjeta, vencimiento, cvv, LocalDate.now())) {
-            venta.setEstado("RECHAZADA");
+            venta.setEstado(ReglasVenta.ESTADO_RECHAZADA);
             ventaRepository.save(venta);
 
             return new VentaResponse(
                     venta, "Pago rechazado: " + motivoRechazo(numeroTarjeta, vencimiento, cvv), List.of());
         }
 
-        // Pago válido: se descuenta el stock y se revisa si algún producto llegó al mínimo
-        List<String> productosStockMinimo = new ArrayList<>();
+        List<String> productosStockMinimo = descontarStock(venta);
 
-        for (DetalleVenta detalle : venta.getDetalles()) {
-            Producto producto = detalle.getProducto();
-            producto.setStock(ReglasVenta.descontarStock(producto.getStock(), detalle.getCantidad()));
-            productoRepository.save(producto);
-
-            if (ReglasVenta.stockBajo(producto.getStock(), producto.getStockMinimo())) {
-                productosStockMinimo.add(producto.getNombre() + " (talla " + producto.getTalla()
-                        + "): quedan " + producto.getStock());
-            }
-        }
-
-        venta.setEstado("PAGADA");
+        venta.setEstado(ReglasVenta.ESTADO_PAGADA);
         venta.setUltimos4(numeroTarjeta.substring(12));
         ventaRepository.save(venta);
 
@@ -192,7 +131,7 @@ public class VentaService {
         if (idCliente == null || !idCliente.equals(venta.getCliente().getIdUsuario())) {
             throw new IllegalArgumentException("Solo el cliente dueño de la compra puede descargar la boleta.");
         }
-        if (!"PAGADA".equals(venta.getEstado())) {
+        if (!ReglasVenta.ESTADO_PAGADA.equals(venta.getEstado())) {
             throw new IllegalArgumentException("Solo las compras pagadas tienen boleta.");
         }
 
@@ -204,6 +143,85 @@ public class VentaService {
             throw new IllegalArgumentException("El cliente no existe.");
         }
         return ventaRepository.buscarPorCliente(idCliente);
+    }
+
+    private void validarSolicitud(VentaRequest request) {
+        if (request == null || request.getIdCliente() == null) {
+            throw new IllegalArgumentException("Debe indicar el cliente.");
+        }
+        if (request.getPago() == null) {
+            throw new IllegalArgumentException("Debe ingresar los datos de pago.");
+        }
+    }
+
+    // Bloquea cada producto (FOR UPDATE), vuelve a revisar su stock y arma el detalle de la venta.
+    // Sin stock suficiente no se registra nada (la transacción se revierte).
+    private void agregarDetalles(Venta venta, Map<Integer, Integer> cantidades) {
+        List<BigDecimal> subtotales = new ArrayList<>();
+        List<String> productosSinStock = new ArrayList<>();
+
+        // Se bloquean en orden de id para que dos compras simultáneas no se esperen en cruz
+        List<Integer> ids = new ArrayList<>(cantidades.keySet());
+        ids.sort(null);
+
+        for (Integer idProducto : ids) {
+            Producto producto = productoRepository.buscarParaVenta(idProducto)
+                    .orElseThrow(() -> new IllegalArgumentException(PRODUCTO_NO_EXISTE));
+            validarALaVenta(producto);
+
+            int cantidad = cantidades.get(idProducto);
+
+            if (!ReglasVenta.stockSuficiente(producto.getStock(), cantidad)) {
+                productosSinStock.add(describirFaltaDeStock(producto, cantidad));
+                continue;
+            }
+
+            DetalleVenta detalle = new DetalleVenta();
+            detalle.setProducto(producto);
+            detalle.setCantidad(cantidad);
+            detalle.setPrecioUnitario(producto.getPrecio());
+            detalle.setSubtotal(ReglasVenta.calcularSubtotal(producto.getPrecio(), cantidad));
+
+            venta.agregarDetalle(detalle);
+            subtotales.add(detalle.getSubtotal());
+        }
+
+        if (!productosSinStock.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "No hay stock suficiente para: " + String.join("; ", productosSinStock));
+        }
+
+        venta.setTotal(ReglasVenta.calcularTotal(subtotales));
+    }
+
+    // Pago válido: descuenta el stock y devuelve los productos que llegaron al mínimo
+    private List<String> descontarStock(Venta venta) {
+        List<String> productosStockMinimo = new ArrayList<>();
+
+        for (DetalleVenta detalle : venta.getDetalles()) {
+            Producto producto = detalle.getProducto();
+            producto.setStock(ReglasVenta.descontarStock(producto.getStock(), detalle.getCantidad()));
+            productoRepository.save(producto);
+
+            if (ReglasVenta.stockBajo(producto.getStock(), producto.getStockMinimo())) {
+                productosStockMinimo.add(producto.getNombre() + " (talla " + producto.getTalla()
+                        + "): quedan " + producto.getStock());
+            }
+        }
+
+        return productosStockMinimo;
+    }
+
+    private void validarALaVenta(Producto producto) {
+        if (!ReglasVenta.PRODUCTO_ACTIVO.equals(producto.getEstado())) {
+            throw new IllegalArgumentException(
+                    "El producto " + producto.getNombre() + " ya no está a la venta.");
+        }
+    }
+
+    private String describirFaltaDeStock(Producto producto, int cantidad) {
+        return producto.getNombre() + " (talla " + producto.getTalla()
+                + "): pediste " + cantidad + ", hay " + producto.getStock();
     }
 
     private String soloDigitos(String texto) {
